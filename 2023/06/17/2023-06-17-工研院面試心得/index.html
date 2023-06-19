@@ -17,7 +17,7 @@
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://media.discordapp.net/attachments/1083831015967047702/1119246573717704775/image.png">
 <meta property="article:published_time" content="2023-06-17T12:49:00.000Z">
-<meta property="article:modified_time" content="2023-06-19T16:43:29.130Z">
+<meta property="article:modified_time" content="2023-06-19T17:50:02.014Z">
 <meta property="article:author" content="Three Month">
 <meta property="article:tag" content="初學">
 <meta property="article:tag" content="轉領域">
@@ -29,9 +29,9 @@
 <link rel="stylesheet" href="/lib/mdui_043tiny/mdui.css">
 
 
-    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1687193478394">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1687197019209">
     
-    <link rel="stylesheet" href="/css/style.css?v=1687193478394">
+    <link rel="stylesheet" href="/css/style.css?v=1687197019209">
 
     
 <meta name="generator" content="Hexo 6.3.0"></head>
@@ -354,7 +354,7 @@
 <figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs verilog"><span class="hljs-comment">//non-blocking</span><br><span class="hljs-keyword">always</span> @(<span class="hljs-keyword">posedge</span> clk)<br>    temp &lt;= a &amp; b;<br>    out &lt;= temp | c;<br></code></pre></td></tr></table></figure>
 <p>網路上很顯然會講說blocking assignment是只有一個DFF，接在combinational logic的後面，而non-blocking assignment是有兩個DFF，分別接在兩個gate後面。但那時我一直不解的是，從語法上來看，blocking assignment的temp應該也是在clk上升時，temp才會跟著改變，而只有一個DFF的電路應該是沒辦法實現這件事。因為這個小細節，害我的回答不是非常確定。</p>
 <p>後來我問了其他大佬們，才知道simulation還可以分成function simulation和gate-level simulation，這兩個模擬的結果有時也有差異。</p>
-<p>根據友人的幫忙，下圖為rtl的模擬，會發現blocking assignment的out1是隨著clk更新的。<br><img src="https://media.discordapp.net/attachments/1083831015967047702/1119246573717704775/image.png" /></p>
+<p>根據友人的幫忙，下圖為rtl的模擬，會發現blocking assignment的temp是隨著clk更新的。<br><img src="https://media.discordapp.net/attachments/1083831015967047702/1119246573717704775/image.png" /></p>
 <p>如果改觀察合成出來的netlist，會發現blocking assignment的netlist反而是combinational logic，發現和rtl的模擬還是有段差距，算是補齊我的盲點。</p>
 <figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs verilog"><span class="hljs-comment">/////////////////////////////////////////////////////////////</span><br><span class="hljs-comment">// Created by: Synopsys DC Expert(TM) in wire load mode</span><br><span class="hljs-comment">// Version   : R-2020.09</span><br><span class="hljs-comment">// Date      : Fri Jun 16 20:50:55 2023</span><br><span class="hljs-comment">/////////////////////////////////////////////////////////////</span><br><br><br><span class="hljs-keyword">module</span> test ( clk, a, b, c, out );<br>  <span class="hljs-keyword">input</span> clk, a, b, c;<br>  <span class="hljs-keyword">output</span> out;<br>  <span class="hljs-keyword">wire</span>   N1;<br><br>  DFFQXL out_reg ( <span class="hljs-variable">.D</span>(N1), <span class="hljs-variable">.CK</span>(clk), <span class="hljs-variable">.Q</span>(out) );<br>  AO21X1 U3 ( <span class="hljs-variable">.A0</span>(b), <span class="hljs-variable">.A1</span>(a), <span class="hljs-variable">.B0</span>(c), <span class="hljs-variable">.Y</span>(N1) );<br><span class="hljs-keyword">endmodule</span><br></code></pre></td></tr></table></figure>
 <h1 id="後記"><a href="#後記" class="headerlink" title="後記:"></a>後記:</h1><p>面試時雖然沒問太難的知識，但同時也讓我發現我能力上的缺陷，所以我最近也有在HDLBits上刷題verilog，並做成<a target="_blank" rel="noopener" href="https://note.threemonth03.com/jekyll/2023-06-15-HDLBits.html">筆記</a>。此外，面試官也建議我簡報的字體可以放大一點，同時也盡量展現修課時寫的code。整體來說，這次的面試算是很好的經驗，希望未來去實習時可以學到更多的東西。</p>
@@ -385,7 +385,7 @@
 </div>
 
   
-    <script async src="/js/copy-codeblock.js?v=1687193478368"></script>
+    <script async src="/js/copy-codeblock.js?v=1687197019185"></script>
   
 
   
@@ -463,7 +463,7 @@
 
  
 
-<script async src="/js/app.js?v=1687193478396"></script>
+<script async src="/js/app.js?v=1687197019211"></script>
 
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2058306854838448" crossorigin="anonymous"></script>
 
