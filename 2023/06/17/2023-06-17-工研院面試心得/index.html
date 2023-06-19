@@ -17,7 +17,7 @@
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://media.discordapp.net/attachments/1083831015967047702/1119246573717704775/image.png">
 <meta property="article:published_time" content="2023-06-17T12:49:00.000Z">
-<meta property="article:modified_time" content="2023-06-18T15:44:53.340Z">
+<meta property="article:modified_time" content="2023-06-19T12:38:42.415Z">
 <meta property="article:author" content="Three Month">
 <meta property="article:tag" content="初學">
 <meta property="article:tag" content="轉領域">
@@ -29,9 +29,9 @@
 <link rel="stylesheet" href="/lib/mdui_043tiny/mdui.css">
 
 
-    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1687105266646">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1687178336094">
     
-    <link rel="stylesheet" href="/css/style.css?v=1687105266646">
+    <link rel="stylesheet" href="/css/style.css?v=1687178336094">
 
     
 <meta name="generator" content="Hexo 6.3.0"></head>
@@ -352,7 +352,7 @@
 <p>因為c和c++並不是容易的語言，所以我跟面試官說我不敢說我c&#x2F;c++很熟練。而verilog我真的還回去了，所以我也說我verilog不熟練。因為考官看我硬體課修的偏少，所以考官有加考verilog。那時就考了blocking和non blocking的電路差異，像說下列兩段程式碼。</p>
 <figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//blocking</span></span><br><span class="line"><span class="keyword">always</span> @(<span class="keyword">posedge</span> clk)</span><br><span class="line">    temp = a &amp; b;</span><br><span class="line">    out = temp | c;</span><br></pre></td></tr></table></figure>
 <figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//non-blocking</span></span><br><span class="line"><span class="keyword">always</span> @(<span class="keyword">posedge</span> clk)</span><br><span class="line">    temp &lt;= a &amp; b;</span><br><span class="line">    out &lt;= temp | c;</span><br></pre></td></tr></table></figure>
-<p>網路上很顯然會講說blocking assignment是只有一個DFF，接在combinational logic的後面，而non-blocking assignment是有兩個DFF，分別接在兩個gate後面。但那時我一直不解的是，從語法上來看，blocking assignment的out1應該也是在clk上升時，temp才會跟著改變，而只有一個DFF的電路應該是沒辦法實現這件事。因為這個小細節，害我的回答不是非常確定。</p>
+<p>網路上很顯然會講說blocking assignment是只有一個DFF，接在combinational logic的後面，而non-blocking assignment是有兩個DFF，分別接在兩個gate後面。但那時我一直不解的是，從語法上來看，blocking assignment的temp應該也是在clk上升時，temp才會跟著改變，而只有一個DFF的電路應該是沒辦法實現這件事。因為這個小細節，害我的回答不是非常確定。</p>
 <p>後來我問了其他大佬們，才知道simulation還可以分成function simulation和gate-level simulation，這兩個模擬的結果有時也有差異。</p>
 <p>根據友人的幫忙，下圖為rtl的模擬，會發現blocking assignment的out1是隨著clk更新的。<br><img src="https://media.discordapp.net/attachments/1083831015967047702/1119246573717704775/image.png" /></p>
 <p>如果改觀察合成出來的netlist，會發現blocking assignment的netlist反而是combinational logic，發現和rtl的模擬還是有段差距，算是補齊我的盲點。</p>
@@ -459,7 +459,7 @@
 
  
 
-<script async src="/js/app.js?v=1687105266647"></script>
+<script async src="/js/app.js?v=1687178336096"></script>
 
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2058306854838448" crossorigin="anonymous"></script>
 
