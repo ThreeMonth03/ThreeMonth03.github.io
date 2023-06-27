@@ -35,7 +35,7 @@
 <meta property="og:image" content="https://i.imgur.com/Y9osx8H.png">
 <meta property="og:image" content="https://i.imgur.com/TWA5HA8.png">
 <meta property="article:published_time" content="2023-06-21T02:06:00.000Z">
-<meta property="article:modified_time" content="2023-06-27T05:36:23.203Z">
+<meta property="article:modified_time" content="2023-06-27T05:43:09.429Z">
 <meta property="article:author" content="Three Month">
 <meta property="article:tag" content="論文精讀">
 <meta name="twitter:card" content="summary">
@@ -46,9 +46,9 @@
 <link rel="stylesheet" href="/lib/mdui_043tiny/mdui.css">
 
 
-    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1687844221627">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1687844594459">
     
-    <link rel="stylesheet" href="/css/style.css?v=1687844221627">
+    <link rel="stylesheet" href="/css/style.css?v=1687844594459">
 
     
 <meta name="generator" content="Hexo 6.3.0"></head>
@@ -371,15 +371,15 @@
 
 
       <p><escape><span id="more"></span><escape></p>
-<h2 id="Introduction-to-Hardware"><a href="#Introduction-to-Hardware" class="headerlink" title="Introduction to Hardware"></a>Introduction to Hardware</h2><p>DNN常有的結構包含convolution和fc layer，而這兩種layer的點積運算仰賴於MAC(乘法累加器)，而MAC會藏在ALU中。</p>
-<p>而一塊運算單元中，hardware會有不少的ALU。對於hardware的分類，作者將其分成兩大類，分別是Temporal Architecture和Spatial Architecture。</p>
+<h2 id="Introduction-to-Hardware"><a href="#Introduction-to-Hardware" class="headerlink" title="Introduction to Hardware"></a>Introduction to Hardware</h2><p>DNN常有的結構包含Convolution和Fc Layer，而這兩種Layer的點積運算仰賴於MAC(乘法累加器)，而MAC會藏在ALU中。</p>
+<p>而一塊運算單元中，Hardware會有不少的ALU。對於Hardware的分類，作者將其分成兩大類，分別是Temporal Architecture和Spatial Architecture。</p>
 <img data-fancybox="gallery" src="https://i.imgur.com/4xaAk1x.png" alt="Temporal Architecture and Spatial Architecture" data-caption="Temporal Architecture and Spatial Architecture" loading="lazy">
 
 <h3 id="Temporal-Architecture-and-Spatial-Architecture"><a href="#Temporal-Architecture-and-Spatial-Architecture" class="headerlink" title="Temporal Architecture and Spatial Architecture"></a>Temporal Architecture and Spatial Architecture</h3><p>Temporal Architure主要包含CPU和GPU，原因在於CPU和GPU常使用SIMD和SIMT的技術和最佳化演算法來節省運算時間。</p>
 <p>而Spatial Architure就是加速器，常用ASIC和FPGA實作，是透過將Register File和Control Logic放在ALU旁邊達到節省能耗的效果。</p>
 <h2 id="Temporal-Architecture"><a href="#Temporal-Architecture" class="headerlink" title="Temporal Architecture"></a>Temporal Architecture</h2><p>對於Temporal Architecture，作者專注於演算法的最佳化討論。</p>
 <h3 id="FC-Layer-and-Convolutional-Layer"><a href="#FC-Layer-and-Convolutional-Layer" class="headerlink" title="FC Layer and Convolutional Layer"></a>FC Layer and Convolutional Layer</h3><p>首先作者介紹FC Layer和Convolutional Layer是如何在CPU和GPU中做運算。</p>
-<p>FC Layer的部分，實際上就是2維的Input和Filter做內積，如果Input不是2維，像是包含了Channel和Batch size的話，那就要將矩陣Flatten後變成2維，其中一維的大小是Batch Size。而CPU和GPU在處理內積時，就能使用SIMD和SIMT。</p>
+<p>FC Layer的部分，實際上就是2維的Input和Filter做內積，如果Input不是2維，像是包含了Channel和Batch Size的話，那就要將矩陣Flatten後變成2維，其中一維的大小是Batch Size。而CPU和GPU在處理內積時，就能使用SIMD和SIMT。</p>
 <img data-fancybox="gallery" src="https://i.imgur.com/MQJIFM5.png" alt="FC Layer Operation" data-caption="FC Layer Operation" loading="lazy">
 
 <p>Convolutional Layer的部分，如果想要更進一步加速運算，可以將Convolution攤成1維陣列，Input攤成的對應的二維陣列，最後就能轉換成矩陣內積。缺點就是轉換後的Input Fmap會變大，尤其當有多個Filter時，就要有多次重複的Input Fmap。</p>
@@ -460,7 +460,7 @@
 </div>
 
   
-    <script async src="/js/copy-codeblock.js?v=1687844221599"></script>
+    <script async src="/js/copy-codeblock.js?v=1687844594430"></script>
   
 
   
@@ -538,7 +538,7 @@
 
  
 
-<script async src="/js/app.js?v=1687844221629"></script>
+<script async src="/js/app.js?v=1687844594461"></script>
 
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2058306854838448" crossorigin="anonymous"></script>
 
