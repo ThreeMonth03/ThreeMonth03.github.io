@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+
+<html lang="zh-TW,en,default">
+
+<head>
+    
+    <title>Efficient Processing of Deep Neural Networks, A Tutorial and Survey小結精讀 - 三個月的小屋</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/vs2015.min.css"> <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="shortcut icon" href="../images/head/new.png" type="image/png" />
+    <meta property="og:type" content="article">
+<meta property="og:title" content="Efficient Processing of Deep Neural Networks, A Tutorial and Survey小結精讀">
+<meta property="og:url" content="https://threemonth03.github.io/2023/06/21/2023-06-21-Efficient-Processing-of-Deep-Neural-Networks%E5%B0%8F%E7%B5%90%E7%B2%BE%E8%AE%80/index.html">
+<meta property="og:site_name" content="三個月的小屋">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/4xaAk1x.png">
+<meta property="og:image" content="https://i.imgur.com/MQJIFM5.png">
+<meta property="og:image" content="https://i.imgur.com/qv6b0rV.png">
+<meta property="og:image" content="https://i.imgur.com/1MPRJW0.png">
+<meta property="og:image" content="https://i.imgur.com/1Yww7TW.png">
+<meta property="og:image" content="https://i.imgur.com/MpEw1mH.png">
+<meta property="og:image" content="https://i.imgur.com/HkZkjv8.png">
+<meta property="og:image" content="https://i.imgur.com/AKHLFT0.png">
+<meta property="og:image" content="https://i.imgur.com/mVeGFkX.png">
+<meta property="og:image" content="https://i.imgur.com/YZ3mI0R.png">
+<meta property="og:image" content="https://i.imgur.com/WJsCaqB.png">
+<meta property="og:image" content="https://i.imgur.com/6OfyrSJ.png">
+<meta property="og:image" content="https://i.imgur.com/5evaqwN.png">
+<meta property="og:image" content="https://i.imgur.com/v6eyINS.png">
+<meta property="og:image" content="https://i.imgur.com/7VhpHmZ.png">
+<meta property="og:image" content="https://i.imgur.com/ksk3LMN.png">
+<meta property="og:image" content="https://i.imgur.com/YmpSgeC.png">
+<meta property="og:image" content="https://i.imgur.com/Y9osx8H.png">
+<meta property="og:image" content="https://i.imgur.com/TWA5HA8.png">
+<meta property="article:published_time" content="2023-06-21T02:06:00.000Z">
+<meta property="article:modified_time" content="2023-06-27T05:36:23.203Z">
+<meta property="article:author" content="Three Month">
+<meta property="article:tag" content="論文精讀">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/4xaAk1x.png">
+    
+<link rel="stylesheet" href="/lib/fancybox/fancybox.css">
+<link rel="stylesheet" href="/lib/justifiedGallery/justifiedGallery.min.css">
+<link rel="stylesheet" href="/lib/mdui_043tiny/mdui.css">
+
+
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1687844221627">
+    
+    <link rel="stylesheet" href="/css/style.css?v=1687844221627">
+
+    
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="mdui-drawer-body-left">
+    <div id="nexmoe-background">
+        <div class="nexmoe-bg" style="background-image: url(/images/background/newbg.jpg)"></div>
+        <div class="nexmoe-small" style="background-image: url(/images/background/fate.jpg)"></div>
+        <div class="mdui-appbar mdui-shadow-0">
+            <div class="mdui-toolbar">
+                <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+                <div class="mdui-toolbar-spacer"></div>
+                <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+                <a href="/" title="Three Month" class="mdui-btn mdui-btn-icon"><img src="/images/head/new.jpg" alt="Three Month"></a>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-header">
+        <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="Three Month">
+            <img src="/images/head/new.jpg" alt="Three Month" alt="Three Month">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>文章</span>9</div>
+        <div><span>標籤</span>8</div>
+        <div><span>分類</span>6</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/" title="回到首頁">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首頁
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/archives.html" title="文章歸檔">
+            <i class="mdui-list-item-icon nexmoefont icon-i-catalog"></i>
+            <div class="mdui-list-item-content">
+                文章歸檔
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/about.html" title="關於我">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                關於我
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+    
+        
+        <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+         
+            <form id="search_form" action_e="https://www.google.com/search?q=site:www.threemonth03.com" onsubmit="return search();">
+                <label><input id="search_value" name="q" type="search" placeholder="搜尋"></label>
+            </form>
+         
+    </div>
+</div>
+
+
+
+
+    
+        
+        <div class="nexmoe-widget-wrap">
+	<div class="nexmoe-widget nexmoe-social">
+		<a
+			class="mdui-ripple"
+			href="https://twitter.com/Thre3Month"
+			target="_blank"
+			mdui-tooltip="{content: 'Twitter'}"
+			style="
+				color: rgb(59, 151, 239);
+				background-color: rgba(59, 151, 239, .1);
+			"
+		>
+			<i
+				class="nexmoefont icon-twitter"
+			></i> </a
+		><a
+			class="mdui-ripple"
+			href="mailto:austin20463@gmail.com"
+			target="_blank"
+			mdui-tooltip="{content: 'mail'}"
+			style="
+				color: rgb(249,8,8);
+				background-color: rgba(249,8,8,.1);
+			"
+		>
+			<i
+				class="nexmoefont icon-mail-fill"
+			></i> </a
+		><a
+			class="mdui-ripple"
+			href="https://github.com/threemonth03/"
+			target="_blank"
+			mdui-tooltip="{content: 'GitHub'}"
+			style="
+				color: rgb(25, 23, 23);
+				background-color: rgba(25, 23, 23, .15);
+			"
+		>
+			<i
+				class="nexmoefont icon-github"
+			></i> </a
+		><a
+			class="mdui-ripple"
+			href="https://note.threemonth03.com"
+			target="_blank"
+			mdui-tooltip="{content: 'Note'}"
+			style="
+				color: rgb(100, 100, 100);
+				background-color: rgba(100, 100, 100, .15);
+			"
+		>
+			<i
+				class="nexmoefont icon-container"
+			></i> </a
+		>
+	</div>
+</div>
+
+    
+        
+        
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">文章分類</h3>
+    <div class="nexmoe-widget">
+
+      <ul class="category-list">
+
+        
+
+
+        
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/修課心得/">修課心得</a>
+          <span class="category-list-count">4</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/個人網站/">個人網站</a>
+          <span class="category-list-count">1</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/升學準備/">升學準備</a>
+          <span class="category-list-count">1</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/生活/">生活</a>
+          <span class="category-list-count">1</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/知識/">知識</a>
+          <span class="category-list-count">1</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/面試/">面試</a>
+          <span class="category-list-count">1</span>
+        </li>
+
+        
+      </ul>
+
+    </div>
+  </div>
+
+
+    
+        
+        
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/%E4%B8%89%E5%80%8B%E6%9C%88%E7%9C%9F%E5%BC%B1/" style="font-size: 10px;">三個月真弱</a> <a href="/tags/%E5%88%9D%E5%AD%B8/" style="font-size: 20px;">初學</a> <a href="/tags/%E5%88%B7%E6%B0%B4%E8%AA%B2/" style="font-size: 10px;">刷水課</a> <a href="/tags/%E5%BB%A2%E6%96%87/" style="font-size: 20px;">廢文</a> <a href="/tags/%E7%88%86%E8%82%9D/" style="font-size: 10px;">爆肝</a> <a href="/tags/%E8%8B%B1%E6%96%87%E8%AA%B2project/" style="font-size: 20px;">英文課project</a> <a href="/tags/%E8%AB%96%E6%96%87%E7%B2%BE%E8%AE%80/" style="font-size: 10px;">論文精讀</a> <a href="/tags/%E8%BD%89%E9%A0%98%E5%9F%9F/" style="font-size: 10px;">轉領域</a>
+    </div>
+    
+      <script>
+        var maxTagcloud = parseInt(17);
+        var tags_length = parseInt(8);
+        var tags_arr = [];
+        for(var i = 0; i < tags_length; i++){
+          tags_arr.push(i);
+        }
+        tags_arr.sort(function (l, r) {
+          return Math.random() > 0.5 ? -1 : 1;
+        });
+        tags_arr = tags_arr.slice(0, maxTagcloud < tags_length ? tags_length - maxTagcloud : 0);
+        for(var tag_i = 0; tag_i < tags_arr.length; tag_i++){
+          document.getElementById("randomtagcloud").children[tags_arr[tag_i]].style.display = 'none';
+        }
+      </script>
+    
+  </div>
+
+    
+        
+        
+        
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">所有文章</h3>
+    <div class="nexmoe-widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/">2023</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/">2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/">2021</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+
+    
+        
+        
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">最新文章</h3>
+    <div class="nexmoe-widget">
+      <ul>
+        
+          <li>
+            <a href="/2023/06/21/2023-06-21-Efficient-Processing-of-Deep-Neural-Networks%E5%B0%8F%E7%B5%90%E7%B2%BE%E8%AE%80/">Efficient Processing of Deep Neural Networks, A Tutorial and Survey小結精讀</a>
+          </li>
+        
+          <li>
+            <a href="/2023/06/17/2023-06-17-%E5%B7%A5%E7%A0%94%E9%99%A2%E9%9D%A2%E8%A9%A6%E5%BF%83%E5%BE%97/">工研院面試心得</a>
+          </li>
+        
+          <li>
+            <a href="/2023/02/12/2023-02-12-%E5%AF%92%E5%81%87%E5%B0%8F%E7%B5%90/">2023年寒假小結</a>
+          </li>
+        
+          <li>
+            <a href="/2023/02/09/2023-02-09-%E6%9E%B6%E5%80%8B%E4%BA%BA%E7%B6%B2%E7%AB%99%E5%BF%83%E5%BE%97/">架個人網站心得</a>
+          </li>
+        
+          <li>
+            <a href="/2023/01/24/2023-01-24-%E5%A4%A7%E5%9B%9B%E4%B8%8A%E4%BF%AE%E8%AA%B2%E5%BF%83%E5%BE%97/">大四上修課心得</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+    
+        
+        <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-link">
+		<ul>
+        
+		</ul>
+    </div>
+</div>
+<style>
+.nexmoe-widget-wrap .nexmoe-link ul li a {
+    text-align : center;
+}
+.nexmoe-widget-wrap .nexmoe-link ul li a img {
+    max-width : 100%;
+}
+.nexmoe-widget-wrap .nexmoe-link ul li a p {
+    margin: 10px 0;
+}
+</style>
+
+    
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2023 Three Month
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+            <div style="font-size: 12px">
+                <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                本站总访问量  <a id="busuanzi_value_site_pv"></a> 次<br />
+                本站访客数<a id="busuanzi_value_site_uv"></a>人次
+            </div>
+            
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+    </div>
+    <div id="nexmoe-content">
+        <div class="nexmoe-primary">
+            <div class="nexmoe-post">
+
+  <article>
+      
+          <div class="nexmoe-post-cover" style="padding-bottom: NaN%;"> 
+              <img src="/images/background/tree1.png" alt="Efficient Processing of Deep Neural Networks, A Tutorial and Survey小結精讀" loading="lazy">
+              <h1>Efficient Processing of Deep Neural Networks, A Tutorial and Survey小結精讀</h1>
+          </div>
+      
+      
+      <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2023年06月21日</a>
+</div>
+      
+    <a><i class="nexmoefont icon-areachart"></i>約1.7k字</a>
+    <a><i class="nexmoefont icon-time-circle-fill"></i>大概需要6分鐘</a>
+
+
+      <p><escape><span id="more"></span><escape></p>
+<h2 id="Introduction-to-Hardware"><a href="#Introduction-to-Hardware" class="headerlink" title="Introduction to Hardware"></a>Introduction to Hardware</h2><p>DNN常有的結構包含convolution和fc layer，而這兩種layer的點積運算仰賴於MAC(乘法累加器)，而MAC會藏在ALU中。</p>
+<p>而一塊運算單元中，hardware會有不少的ALU。對於hardware的分類，作者將其分成兩大類，分別是Temporal Architecture和Spatial Architecture。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/4xaAk1x.png" alt="Temporal Architecture and Spatial Architecture" data-caption="Temporal Architecture and Spatial Architecture" loading="lazy">
+
+<h3 id="Temporal-Architecture-and-Spatial-Architecture"><a href="#Temporal-Architecture-and-Spatial-Architecture" class="headerlink" title="Temporal Architecture and Spatial Architecture"></a>Temporal Architecture and Spatial Architecture</h3><p>Temporal Architure主要包含CPU和GPU，原因在於CPU和GPU常使用SIMD和SIMT的技術和最佳化演算法來節省運算時間。</p>
+<p>而Spatial Architure就是加速器，常用ASIC和FPGA實作，是透過將Register File和Control Logic放在ALU旁邊達到節省能耗的效果。</p>
+<h2 id="Temporal-Architecture"><a href="#Temporal-Architecture" class="headerlink" title="Temporal Architecture"></a>Temporal Architecture</h2><p>對於Temporal Architecture，作者專注於演算法的最佳化討論。</p>
+<h3 id="FC-Layer-and-Convolutional-Layer"><a href="#FC-Layer-and-Convolutional-Layer" class="headerlink" title="FC Layer and Convolutional Layer"></a>FC Layer and Convolutional Layer</h3><p>首先作者介紹FC Layer和Convolutional Layer是如何在CPU和GPU中做運算。</p>
+<p>FC Layer的部分，實際上就是2維的Input和Filter做內積，如果Input不是2維，像是包含了Channel和Batch size的話，那就要將矩陣Flatten後變成2維，其中一維的大小是Batch Size。而CPU和GPU在處理內積時，就能使用SIMD和SIMT。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/MQJIFM5.png" alt="FC Layer Operation" data-caption="FC Layer Operation" loading="lazy">
+
+<p>Convolutional Layer的部分，如果想要更進一步加速運算，可以將Convolution攤成1維陣列，Input攤成的對應的二維陣列，最後就能轉換成矩陣內積。缺點就是轉換後的Input Fmap會變大，尤其當有多個Filter時，就要有多次重複的Input Fmap。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/qv6b0rV.png" alt="FC Layer Operation" data-caption="FC Layer Operation" loading="lazy">
+
+<h3 id="Convolution-Optimization"><a href="#Convolution-Optimization" class="headerlink" title="Convolution Optimization"></a>Convolution Optimization</h3><p>接著作者對於矩陣內積提出了兩種最佳化的方法。一種是快速傅立葉變換，另一種是Strassen Algorithm。</p>
+<p>如何透過快速傅立葉變換進行內積的話，可以參考<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/300603589">這篇</a>，最後可以知道複雜度從<code>O(No^2 * Nf^2)</code>變成<code>O(No^2 * log No)</code>，其中<code>Nf</code>是Filter的長和寬度，<code>No</code>是Output的長度和寬度。</p>
+<p>另一種Strassen Algorithm的話，可以參考<a target="_blank" rel="noopener" href="https://www.csie.ntu.edu.tw/~wcchen/algorithm/strassen/strassen.html">這篇</a>，最後可以知道複雜度從<code>O(N^3)</code>變成<code>O(N^(log7/log2))</code>。</p>
+<p>從FFT的複雜度可以觀察到，<code>Nf^2</code>不一定比<code>log No</code>來的大，所以作者說要盡量在Filter比較大<code>(filter &gt; 5 * 5)</code>時使用FFT。而Strassen Algorithm是用在矩陣乘法，前面提到當矩陣內積轉換成矩陣乘法時，Input會變大，尤其在Filter大小越大時，Input變大速度特別快，所以Strassen Algorithm適合在Filter較小<code>(filter &lt; 3 * 3)</code>時使用。</p>
+<h2 id="Spatial-Architecture"><a href="#Spatial-Architecture" class="headerlink" title="Spatial Architecture"></a>Spatial Architecture</h2><p>作者提到MAC在運作時，會從DRAM讀取3筆資料分別進行乘法和加法，最後再將1筆資料寫回DRAM，而從圖中可以看到各個單元的能耗比較，會發現DRAM的能耗會是ALU的上百倍。為了減少能耗，Spatial Architecture就此誕生，Spatial Architecture的特點就是將Register File和Control Logic直接放在ALU旁邊，組成Processing Engine(PE)。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/1MPRJW0.png" alt="Energy Consumption of Component" data-caption="Energy Consumption of Component" loading="lazy">
+
+<h3 id="Data-Reuse"><a href="#Data-Reuse" class="headerlink" title="Data Reuse"></a>Data Reuse</h3><p>既然PE中的Register File放在ALU旁邊，為了讓Register File內的東西可以重複被使用，所以作者探討了Data Reuse的時機。</p>
+<p>Data Reuse可以分成Convolutional Reuse，Fmap Reuse和Filter Reuse。Convolutional Reuse就是Convolutional Layer進行運算時，Filter和Input都會重複使用。而Fmap Reuse和Filter Reuse則是可能會有一筆資料對應到多筆Filter或是多筆資料對應到一筆Filter的情形。而Filter Reuse常見的情況出自於<code>Batch Size &gt; 1</code>的時候，就會有多筆資料一直使用同個Filter。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/1Yww7TW.png" alt="Data Reuse" data-caption="Data Reuse" loading="lazy">
+
+<h3 id="Term-Explanation"><a href="#Term-Explanation" class="headerlink" title="Term Explanation"></a>Term Explanation</h3><p>在介紹AI加速器的種類前，先簡單提AI加速器相關的術語。</p>
+<p>對於一般的電腦，如果有一個Program，被Compiler編譯後，得到Binary code，再拿去給Processor執行，而Processor的構造會被稱作Architecture。</p>
+<p>而AI加速器的邏輯跟上述的事情其實很像，首先會先把DNN透過Mapper，得到對應的Mapping，再將Mapping交給DNN Accelerator執行，而DNN Accelerator的構造會被稱作Dataflow。<br><img data-fancybox="gallery" src="https://i.imgur.com/MpEw1mH.png" alt="Energy Consumption of Component" data-caption="Energy Consumption of Component" loading="lazy"></p>
+<h3 id="Dataflow"><a href="#Dataflow" class="headerlink" title="Dataflow"></a>Dataflow</h3><p>關於AI加速器的Dataflow，主要可以分成4種主要架構，分別是Weight Stationary(WS)，Output Stationary(OS)，No Local Reuse(NLR)和Row Stationary(RS)。</p>
+<ol>
+<li><p>Weight Stationary(WS)<br>WS的目標就是最小化讀Weights的能耗，也就是最大化Weights從Register File中取得的機會。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/HkZkjv8.png" alt="WS Dataflow" data-caption="WS Dataflow" loading="lazy">
+</li>
+<li><p>Output Stationary(OS)<br>OS的目標就是最小化讀寫Partial Sum的能耗，也就是最大化Partial Sum從Register File中取得的機會。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/AKHLFT0.png" alt="OS Dataflow" data-caption="OS Dataflow" loading="lazy">
+其中，OS Dataflow又能根據Channel和Activation的數量，分成3種變體，分別是OSA，OSB，OSC。OSA Dataflow主要處理Convolution，OSC主要處理FC Layer，而OSB架構介在OSA和OSB中間。
+<img data-fancybox="gallery" src="https://i.imgur.com/mVeGFkX.png" alt="OS Dataflow Detail" data-caption="OS Dataflow Detail" loading="lazy">
+</li>
+<li><p>No Local Reuse(NLR)<br>從RS和OS Dataflow看到，Register File可以減少能耗，但相對的會增加不少面積，因此產生了NLR，目標在於最大化Global Buffer儲存能力，最小化Off-Chip Memory Bandwidth。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/YZ3mI0R.png" alt="NLR Dataflow" data-caption="NLR Dataflow" loading="lazy">
+</li>
+<li><p>Row Stationary(RS)<br>RS的目標就是最大化所有類型的Data在RF中重複使用的機會。<br>舉個例子，下圖中1維Convolution的話，可以看到PE中的RF，裡面的Filter完全不動，只位移Input和Partial Sum來完成運算，而Filter和Input沒有位移很多，正是Data Reuse的展現。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/WJsCaqB.png" alt="RS Dataflow(1)" data-caption="RS Dataflow(1)" loading="lazy">
+2維陣列的話，與1維陣列的不同，是使用了多個PE，然後Filter還是沒動，每次計算Row也只有位移Input和Partial Sum。
+<img data-fancybox="gallery" src="https://i.imgur.com/6OfyrSJ.png" alt="RS Dataflow(2)" data-caption="RS Dataflow(2)" loading="lazy">
+如果有多個Channel和Batch Size大於1的情況，就是透過連接和交錯，就能獲得對應的輸出。
+<img data-fancybox="gallery" src="https://i.imgur.com/5evaqwN.png" alt="RS Dataflow(3)" data-caption="RS Dataflow(3)" loading="lazy"></li>
+</ol>
+<h3 id="Dataflow-Example"><a href="#Dataflow-Example" class="headerlink" title="Dataflow Example"></a>Dataflow Example</h3><p>作者為了講述Dataflow如何運行DNN，給了一個範例，Eyeriss DNN Accelerator，其PE Array大小為12*14。<br><img data-fancybox="gallery" src="https://i.imgur.com/v6eyINS.png" alt="Eyeriss DNN accelerator" data-caption="Eyeriss DNN accelerator" loading="lazy"><br>這時會遇到兩個問題:  </p>
+<ol>
+<li><p>PE Array和Layer大小不同<br>像左圖，如果Layer很小，那就可以安排一次塞多張Layer到PE Array上。若像右圖，如果Layer很大，那就可以透過裁剪，把Layer塞到PE Array上。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/7VhpHmZ.png" alt="Replication & Folding" data-caption="Replication & Folding" loading="lazy">
+</li>
+<li><p>Data不知道要傳去哪個對應的PE Array<br>作者說可以使用Multicast Network解決這個問題，最簡單的做法就是廣播所有的Data，然後透過PE Array中的Control Logic篩選PE需要的Data。</p>
+</li>
+</ol>
+<h3 id="Dataflow-Comparision"><a href="#Dataflow-Comparision" class="headerlink" title="Dataflow Comparision"></a>Dataflow Comparision</h3><p>接著比較WS，OS，NLR和RS的能耗。</p>
+<p>下圖是在跑Convolutional Layer時，每個Dataflow能耗的比較。能看到RS因為最大化RF重複使用各種數據，RF能耗最大，但整體能耗最小。NLR因為沒有RF，資料都塞Buffer，所以Buffer能耗最大。剛剛有提過OSA Dataflow專門處理Convolution，所以OSA能耗比OSC小。<br><img data-fancybox="gallery" src="https://i.imgur.com/ksk3LMN.png" alt="Energy consumption of Convotional Layer(1)" data-caption="Energy consumption of Convotional Layer(1)" loading="lazy"></p>
+<p>下圖也還是跑Convolutional Layer時，每個Dataflow能耗的比較。可以看到WS因為最大化RF重複使用Weight，所以Weight的能耗最小。OS因為最大化RF重複使用Partial Sum，所以Partial Sum的能耗最小。<br><img data-fancybox="gallery" src="https://i.imgur.com/YmpSgeC.png" alt="Energy consumption of Convotional Layer(2)" data-caption="Energy consumption of Convotional Layer(2)" loading="lazy"></p>
+<p>下圖跟上圖不同在於，下圖是跑FC Layer時，每個Dataflow能耗的比較。因為OSC Dataflow專門處理FC Layer，所以OSC能耗比OSA小。<br><img data-fancybox="gallery" src="https://i.imgur.com/Y9osx8H.png" alt="Energy consumption of FC Layer" data-caption="Energy consumption of FC Layer" loading="lazy"></p>
+<p>最後一張圖是在講述，用RS Dataflow跑AlexNet的能耗分析。可以看到L1 ~ L5大多為Convolutional Layer，而Convolutional Layer的RF能耗高。L6 ~ L8大多為FC Layer，而FC Layer的Dram能耗高。但是，比例上來說，L1 ~ L5用了大部分的能耗。而未來的NN Model也是朝著越用越多Convolutional Layer的趨勢在走，所以作者覺得未來應該盡量改良Convolution。<br><img data-fancybox="gallery" src="https://i.imgur.com/TWA5HA8.png" alt="Energy consumption of AlexNet" data-caption="Energy consumption of AlexNet" loading="lazy"></p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>Efficient Processing of Deep Neural Networks: A Tutorial and Survey, Part V. : <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1703.09039.pdf">https://arxiv.org/pdf/1703.09039.pdf</a></p>
+
+      
+  </article>
+
+  
+      
+    <div class="nexmoe-post-copyright">
+        <strong>本文作者：</strong>Three Month<br>
+        <strong>本文連結：</strong><a href="https://threemonth03.github.io/2023/06/21/2023-06-21-Efficient-Processing-of-Deep-Neural-Networks%E5%B0%8F%E7%B5%90%E7%B2%BE%E8%AE%80/" title="https:&#x2F;&#x2F;threemonth03.github.io&#x2F;2023&#x2F;06&#x2F;21&#x2F;2023-06-21-Efficient-Processing-of-Deep-Neural-Networks%E5%B0%8F%E7%B5%90%E7%B2%BE%E8%AE%80&#x2F;" target="_blank" rel="noopener">https:&#x2F;&#x2F;threemonth03.github.io&#x2F;2023&#x2F;06&#x2F;21&#x2F;2023-06-21-Efficient-Processing-of-Deep-Neural-Networks%E5%B0%8F%E7%B5%90%E7%B2%BE%E8%AE%80&#x2F;</a><br>
+        
+            <strong>版權聲明：</strong>本文使用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 協議進行許可
+        
+    </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+        <a class="nexmoefont icon-appstore-fill -link" href="/categories/%E7%9F%A5%E8%AD%98/">知識</a>
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/%E8%AB%96%E6%96%87%E7%B2%BE%E8%AE%80/" rel="tag">論文精讀</a>
+    
+</div>
+
+  
+    <script async src="/js/copy-codeblock.js?v=1687844221599"></script>
+  
+
+  
+      <div class="nexmoe-post-footer">
+          <section class="nexmoe-comment">
+    <script id="dsq-count-scr" src="https://threemonth03.disqus.com/count.js" async></script>
+<div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+        this.page.url = 'https://threemonth03.github.io/2023/06/21/2023-06-21-Efficient-Processing-of-Deep-Neural-Networks%E5%B0%8F%E7%B5%90%E7%B2%BE%E8%AE%80/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'https://threemonth03.github.io/2023/06/21/2023-06-21-Efficient-Processing-of-Deep-Neural-Networks%E5%B0%8F%E7%B5%90%E7%B2%BE%E8%AE%80/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+</script>
+<script id="disqus-thread-script">
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document;
+        var s = d.createElement('script');
+        s.src = '//threemonth03.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', + new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+</section>
+      </div>
+  
+</div>
+            <div class="nexmoe-post-right">
+              <div class="nexmoe-fixed">
+                  <div class="nexmoe-tool"> 
+                    
+                      
+                        
+                          
+                          
+                              <button class="mdui-fab catalog" style="overflow:unset;">
+                                  <i class="nexmoefont icon-i-catalog"></i>
+                                  <div class="nexmoe-toc">
+                                      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Introduction-to-Hardware"><span class="toc-number">1.</span> <span class="toc-text">Introduction to Hardware</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Temporal-Architecture-and-Spatial-Architecture"><span class="toc-number">1.1.</span> <span class="toc-text">Temporal Architecture and Spatial Architecture</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Temporal-Architecture"><span class="toc-number">2.</span> <span class="toc-text">Temporal Architecture</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#FC-Layer-and-Convolutional-Layer"><span class="toc-number">2.1.</span> <span class="toc-text">FC Layer and Convolutional Layer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Convolution-Optimization"><span class="toc-number">2.2.</span> <span class="toc-text">Convolution Optimization</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Spatial-Architecture"><span class="toc-number">3.</span> <span class="toc-text">Spatial Architecture</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Data-Reuse"><span class="toc-number">3.1.</span> <span class="toc-text">Data Reuse</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Term-Explanation"><span class="toc-number">3.2.</span> <span class="toc-text">Term Explanation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dataflow"><span class="toc-number">3.3.</span> <span class="toc-text">Dataflow</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dataflow-Example"><span class="toc-number">3.4.</span> <span class="toc-text">Dataflow Example</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dataflow-Comparision"><span class="toc-number">3.5.</span> <span class="toc-text">Dataflow Comparision</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">4.</span> <span class="toc-text">Reference</span></a></li></ol>
+                                  </div>
+                              </button>
+                          
+                          
+                      
+                    
+                      <a href="#nexmoe-content" class="toc-link" aria-label="Back To Top" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-search-space">
+	<div class="search-container">
+		<div class="search-header">
+			<div class="search-input-container">
+				<input
+					class="search-input"
+					type="text"
+					placeholder="搜尋"
+					oninput="sinput();"
+				/>
+			</div>
+			<a class="search-close" onclick="sclose();">×</a>
+		</div>
+		<div class="search-body"></div>
+	</div>
+</div>
+
+    
+<script src="/lib/mdui_043tiny/mdui.js"></script>
+<script src="/lib/jquery.min.js"></script>
+<script src="/lib/justifiedGallery/jquery.justifiedGallery.min.js"></script>
+<script src="/lib/fancybox/fancybox.umd.js"></script>
+
+
+ 
+
+<script async src="/js/app.js?v=1687844221629"></script>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2058306854838448" crossorigin="anonymous"></script>
+
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+</body>
+
+</html>
