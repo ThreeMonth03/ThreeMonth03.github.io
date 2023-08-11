@@ -18,7 +18,7 @@
 <meta property="og:image" content="https://johnliu55.tw/ssh-tunnel/images/local_scenario1_problem.png">
 <meta property="og:image" content="https://johnliu55.tw/ssh-tunnel/images/local_scenario1_solved.png">
 <meta property="article:published_time" content="2023-07-20T19:18:00.000Z">
-<meta property="article:modified_time" content="2023-07-25T13:11:14.858Z">
+<meta property="article:modified_time" content="2023-07-25T13:14:56.924Z">
 <meta property="article:author" content="Three Month">
 <meta property="article:tag" content="阿克補習班">
 <meta name="twitter:card" content="summary">
@@ -29,9 +29,9 @@
 <link rel="stylesheet" href="/lib/mdui_043tiny/mdui.css">
 
 
-    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1690290679498">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1691740247323">
     
-    <link rel="stylesheet" href="/css/style.css?v=1690290679498">
+    <link rel="stylesheet" href="/css/style.css?v=1691740247323">
 
     
 <meta name="generator" content="Hexo 6.3.0"><style>mjx-container[jax="SVG"] {
@@ -503,27 +503,68 @@ ip是123.456.78.901，照著上圖的話，local forwarding指令為:<br>
 <h3 id="jupyter--tensorboard">Jupyter &amp; Tensorboard</h3>
 <p>太習慣用vscode的Jupyter，變得不會下指令開Jupyter和tensorboard了，這裡記錄一下。</p>
 <p><code>jupyter notebook --no-browser --ip=0.0.0.0 --port=8080 --allow-root --NotebookApp.token='' --NotebookApp.password=''</code><br>
-這句指令的話<br>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs --no-browser```就能避免server打不開瀏覽器的情況。">```--ip=0.0.0.0```的用法能讓任何ip地址使用Jupyter服務。   <br>```--port```的話就是寫container_port。   <br>```--allow-root```是解決Running as root is not recommended的錯誤，至於發生原因不清楚。   <br>然後如果將jupyter開在背景執行，可能就要另外驗證token和密碼，透過```--NotebookApp.token='' --NotebookApp.password='' ```可以省掉驗證。<br><br>```tensorboard --logdir ./logs --host=0.0.0.0 --port=8081```   <br>這句指令的話   <br>```--logdir```後面就是接log檔的path。   <br>```--host=0.0.0.0```的用法能讓任何host地址使用tensorboard服務。    <br>```--port```的話就是寫container_port，   <br><br>### Image &amp; Container<br>#### 簡介<br>在docker中，有兩個東西分別叫做image和container，他們之間的概念有點像是電腦硬體和作業系統。  <br>image的話主要處理環境的安裝，container則是依據單一個image，提供對應服務和管理每個服務檔案的地方。而每次服務結束，container就可以隨手刪除，image可以留下來，等下次要使用服務時，再開啟container。<br><br>#### 常用Image語法<br>首先要先寫Dockerfile，或是去dockerhub找別人整理好的Dockerfile，Dockerfile內含有各種指令，包含要安裝的包，或是想自動執行的指令。  <br><br>1. 有了Dockerfile後，可以透過下列指令來建立image:  <br>```docker build -t [image_name] [path]```   <br>-t這個flag用法是幫image取名，image_name就是image要取的名字，path就是Dockerfile放的資料夾。舉例來說，如果在Dockerfile那層的資料夾中，想創建叫做jupyter_image，那指令就是:   <br>```docker build -t jupyter_image .```    <br>如果覺得建立的image有問題，可以使用```docker build -t [image_name] [path] --no-cache```。  <br>2. 建立好image後，透過```docker images```可以查看所有建立的images。  <br>3. 如果要刪除掉image的話，打上```docker image rm [image_name]```就行了。  <br><br>#### Dockerfile簡介<br>關於Dockerfile的結構，我決定用我這次作業的其中一個image展示。   <br><br>```Dockerfile<br><br>FROM pytorch/pytorch:1.13.0-cuda11.6-cudnn8-devel<br><br>RUN apt-get update &amp;&amp;\<br>    apt-get -y upgrade &amp;&amp;\<br>    apt-get install -y git net-tools vim sudo tcsh gcc g++ unzip python3 python3-pip &amp;&amp;\<br>    apt-get clean &amp;&amp;\<br>    rm -rf /var/lib/apt/lists/*<br><br>RUN pip3 --no-cache-dir install torch \<br>    torchvision \<br>    torchaudio \<br>    tensorboard \<br>    jupyterlab \<br>    jupyter<br><br>CMD ["tensorboard", "--logdir", "./logs", "--host=0.0.0.0", "--port=8324"]<br></code></pre></td></tr></table></figure><br>
-From的話，就是放基本映像檔。<br>
+這句指令的話:</p>
+<ol type="1">
+<li><code>--no-browser</code>就能避免server打不開瀏覽器的情況。<br>
+</li>
+<li><code>--ip=0.0.0.0</code>的用法能讓任何ip地址使用Jupyter服務。<br>
+</li>
+<li><code>--port</code>的話就是寫container_port。<br>
+</li>
+<li><code>--allow-root</code>是解決Running as root is not
+recommended的錯誤，至於發生原因不清楚。<br>
+然後如果將jupyter開在背景執行，可能就要另外驗證token和密碼，透過<code>--NotebookApp.token='' --NotebookApp.password=''</code>可以省掉驗證。</li>
+</ol>
+<p><code>tensorboard --logdir ./logs --host=0.0.0.0 --port=8081</code><br>
+這句指令的話:</p>
+<ol type="1">
+<li><code>--logdir</code>後面就是接log檔的path。<br>
+</li>
+<li><code>--host=0.0.0.0</code>的用法能讓任何host地址使用tensorboard服務。<br>
+</li>
+<li><code>--port</code>的話就是寫container_port，</li>
+</ol>
+<h3 id="image--container">Image &amp; Container</h3>
+<h4 id="簡介">簡介</h4>
+<p>在docker中，有兩個東西分別叫做image和container，他們之間的概念有點像是電腦硬體和作業系統。<br>
+image的話主要處理環境的安裝，container則是依據單一個image，提供對應服務和管理每個服務檔案的地方。而每次服務結束，container就可以隨手刪除，image可以留下來，等下次要使用服務時，再開啟container。</p>
+<h4 id="常用image語法">常用Image語法</h4>
+<p>首先要先寫Dockerfile，或是去dockerhub找別人整理好的Dockerfile，Dockerfile內含有各種指令，包含要安裝的包，或是想自動執行的指令。</p>
+<ol type="1">
+<li>有了Dockerfile後，可以透過下列指令來建立image:<br>
+<code>docker build -t [image_name] [path]</code><br>
+-t這個flag用法是幫image取名，image_name就是image要取的名字，path就是Dockerfile放的資料夾。舉例來說，如果在Dockerfile那層的資料夾中，想創建叫做jupyter_image，那指令就是:<br>
+<code>docker build -t jupyter_image .</code><br>
+如果覺得建立的image有問題，可以使用<code>docker build -t [image_name] [path] --no-cache</code>。<br>
+</li>
+<li>建立好image後，透過<code>docker images</code>可以查看所有建立的images。<br>
+</li>
+<li>如果要刪除掉image的話，打上<code>docker image rm [image_name]</code>就行了。</li>
+</ol>
+<h4 id="dockerfile簡介">Dockerfile簡介</h4>
+<p>關於Dockerfile的結構，我決定用我這次作業的其中一個image展示。</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs Dockerfile"><br><span class="hljs-keyword">FROM</span> pytorch/pytorch:<span class="hljs-number">1.13</span>.<span class="hljs-number">0</span>-cuda11.<span class="hljs-number">6</span>-cudnn8-devel<br><br><span class="hljs-keyword">RUN</span><span class="language-bash"> apt-get update &amp;&amp;\</span><br><span class="language-bash">    apt-get -y upgrade &amp;&amp;\</span><br><span class="language-bash">    apt-get install -y git net-tools vim sudo tcsh gcc g++ unzip python3 python3-pip &amp;&amp;\</span><br><span class="language-bash">    apt-get clean &amp;&amp;\</span><br><span class="language-bash">    <span class="hljs-built_in">rm</span> -rf /var/lib/apt/lists/*</span><br><br><span class="hljs-keyword">RUN</span><span class="language-bash"> pip3 --no-cache-dir install torch \</span><br><span class="language-bash">    torchvision \</span><br><span class="language-bash">    torchaudio \</span><br><span class="language-bash">    tensorboard \</span><br><span class="language-bash">    jupyterlab \</span><br><span class="language-bash">    jupyter</span><br><br><span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">"tensorboard"</span>, <span class="hljs-string">"--logdir"</span>, <span class="hljs-string">"./logs"</span>, <span class="hljs-string">"--host=0.0.0.0"</span>, <span class="hljs-string">"--port=8324"</span>]</span><br></code></pre></td></tr></table></figure>
+<p>From的話，就是放基本映像檔。<br>
 RUN就是放要安裝的指令，覺得太長的話，可以用<code>\</code>換行。<br>
 CMD就是放container開啟後，默認的command，這個檔案的話就是<code>tensorboard --logdir ./logs --host=0.0.0.0 --port=8324</code>。</p>
 <h4 id="常用container語法">常用Container語法</h4>
 <p>建好image後，代表安裝好包，接下來就是啟動服務，所以可以透過下列指令建立並執行container:<br>
 <code>docker run [opotional -it] [(optional) --name [container_name]]  [(optional) -p [server_port]:[container_port]] [(optional) -v [absolutely/relative path]:[container path]] [(optional) --gpus all] [image_name] [(optional) command]</code><br>
-其中optional的部分就是可打可不打，看起來很複雜，就慢慢解釋:<br>
-1. -it: -it是由-i
--t組成，-i代表讓container的標準輸入保持打開，-t代表讓docker分配一個偽終端(pseudo-tty)並綁定到標準輸入上。簡言之，-it通常搭配指令bash，用來開啟一個terminal操作container。<br>
-2. --name:
-這個後面加上container的名字，強烈建議要加，不然很難管理container。<br>
-3. -p: 這個是local forwarding會用到的，前面接local
-forwarding的server_port，後面接container_port，為了好管理，大家常取同樣的數字。<br>
-4. -v:
-這個用來mount，前面加上想被mount的實際資料夾，後面加上container內mount的目的地。<br>
-5. --gpus: 讓docker環境能用上gpu，後面加all就是全用。<br>
-6. command: 這邊跟images內的CMD一樣，就是docker
+其中optional的部分就是可打可不打，看起來很複雜，就慢慢解釋:</p>
+<ol type="1">
+<li>-it: -it是由-i
+-t組成，-i代表讓container的標準輸入保持打開，-t代表讓docker分配一個偽終端(pseudo-tty)並綁定到標準輸入上。簡言之，-it通常搭配指令bash，用來開啟一個terminal操作container。</li>
+<li>--name:
+這個後面加上container的名字，強烈建議要加，不然很難管理container。</li>
+<li>-p: 這個是local forwarding會用到的，前面接local
+forwarding的server_port，後面接container_port，為了好管理，大家常取同樣的數字。</li>
+<li>-v:
+這個用來mount，前面加上想被mount的實際資料夾，後面加上container內mount的目的地。</li>
+<li>--gpus: 讓docker環境能用上gpu，後面加all就是全用。</li>
+<li>command: 這邊跟images內的CMD一樣，就是docker
 run後想自動執行的指令，不過在docker
-run用了command後，images內的CMD就不會自動執行。然後前面提到用了-it後，可以在command這邊下bash來讓操作更加方便。</p>
+run用了command後，images內的CMD就不會自動執行。然後前面提到用了-it後，可以在command這邊下bash來讓操作更加方便。</li>
+</ol>
 <p>講了那麼多，直接給範例好了:<br>
 如果只想執行<code>jupyter_image</code>這個image，並且container名字叫做<code>jupyter_container</code>，指令為<code>docker run --name jupyter_container jupyter_image</code>。<br>
 如果想要進一步用container開啟terminal，然後因為local
@@ -583,7 +624,7 @@ container，docker-compose也會報錯，所以得打<code>docker-compose down -
 </div>
 
   
-    <script async src="/js/copy-codeblock.js?v=1690290679446"></script>
+    <script async src="/js/copy-codeblock.js?v=1691740247274"></script>
   
 
   
@@ -622,7 +663,7 @@ container，docker-compose也會報錯，所以得打<code>docker-compose down -
                               <button class="mdui-fab catalog" style="overflow:unset;">
                                   <i class="nexmoefont icon-i-catalog"></i>
                                   <div class="nexmoe-toc">
-                                      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%9C%E6%A5%AD%E6%AA%94%E6%A1%88%E7%B0%A1%E4%BB%8B"><span class="toc-number">2.</span> <span class="toc-text">作業檔案簡介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%9F%B7%E8%A1%8Ccode"><span class="toc-number">3.</span> <span class="toc-text">如何執行code</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AD%86%E8%A8%98"><span class="toc-number">4.</span> <span class="toc-text">筆記</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#local-forwarding"><span class="toc-number">4.1.</span> <span class="toc-text">Local Forwarding</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jupyter--tensorboard"><span class="toc-number">4.2.</span> <span class="toc-text">Jupyter &amp; Tensorboard</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8container%E8%AA%9E%E6%B3%95"><span class="toc-number">4.2.1.</span> <span class="toc-text">常用Container語法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E7%9A%84docker-compose%E6%8C%87%E4%BB%A4"><span class="toc-number">4.2.2.</span> <span class="toc-text">常用的Docker Compose指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#docker-composeyml%E7%B0%A1%E4%BB%8B"><span class="toc-number">4.2.3.</span> <span class="toc-text">docker-compose.yml簡介</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BF%83%E5%BE%97"><span class="toc-number">5.</span> <span class="toc-text">心得</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#reference"><span class="toc-number">6.</span> <span class="toc-text">Reference</span></a></li></ol>
+                                      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%9C%E6%A5%AD%E6%AA%94%E6%A1%88%E7%B0%A1%E4%BB%8B"><span class="toc-number">2.</span> <span class="toc-text">作業檔案簡介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%9F%B7%E8%A1%8Ccode"><span class="toc-number">3.</span> <span class="toc-text">如何執行code</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AD%86%E8%A8%98"><span class="toc-number">4.</span> <span class="toc-text">筆記</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#local-forwarding"><span class="toc-number">4.1.</span> <span class="toc-text">Local Forwarding</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jupyter--tensorboard"><span class="toc-number">4.2.</span> <span class="toc-text">Jupyter &amp; Tensorboard</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#image--container"><span class="toc-number">4.3.</span> <span class="toc-text">Image &amp; Container</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%B0%A1%E4%BB%8B"><span class="toc-number">4.3.1.</span> <span class="toc-text">簡介</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8image%E8%AA%9E%E6%B3%95"><span class="toc-number">4.3.2.</span> <span class="toc-text">常用Image語法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#dockerfile%E7%B0%A1%E4%BB%8B"><span class="toc-number">4.3.3.</span> <span class="toc-text">Dockerfile簡介</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8container%E8%AA%9E%E6%B3%95"><span class="toc-number">4.3.4.</span> <span class="toc-text">常用Container語法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E7%9A%84docker-compose%E6%8C%87%E4%BB%A4"><span class="toc-number">4.3.5.</span> <span class="toc-text">常用的Docker Compose指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#docker-composeyml%E7%B0%A1%E4%BB%8B"><span class="toc-number">4.3.6.</span> <span class="toc-text">docker-compose.yml簡介</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BF%83%E5%BE%97"><span class="toc-number">5.</span> <span class="toc-text">心得</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#reference"><span class="toc-number">6.</span> <span class="toc-text">Reference</span></a></li></ol>
                                   </div>
                               </button>
                           
@@ -661,7 +702,7 @@ container，docker-compose也會報錯，所以得打<code>docker-compose down -
 
  
 
-<script async src="/js/app.js?v=1690290679502"></script>
+<script async src="/js/app.js?v=1691740247327"></script>
 
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2058306854838448" crossorigin="anonymous"></script>
 
