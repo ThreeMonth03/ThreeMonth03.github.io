@@ -1060,11 +1060,18 @@ body {
   height: 0;
 }
 #nexmoe-header .nexmoe-count {
-  padding: 0 30px;
-  margin-bottom: 30px;
+  border: none !important;
+  background-color: transparent;
+  padding: 20px;
+  box-sizing: border-box;
+  outline: none;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  background-color: #fff;
+  margin: 20px;
+  border-radius: var(--radius);
+  box-shadow: 0 0 1rem var(--color-shadow);
 }
 #nexmoe-header .nexmoe-count div {
   -webkit-box-flex: 1;
@@ -1112,6 +1119,8 @@ body {
   margin-bottom: 10px;
   text-align: center;
   transition: none !important;
+  background: var(--color2-bg);
+  box-shadow: 0 2px 12px var(--color2-bg);
 }
 #nexmoe-header .nexmoe-list .nexmoe-list-item.true,
 #nexmoe-header .nexmoe-list .nexmoe-list-item.true i {
