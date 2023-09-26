@@ -46,9 +46,9 @@
 <link rel="stylesheet" href="/lib/mdui_043tiny/mdui.css">
 
 
-    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1695719281318">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1695720379350">
     
-    <link rel="stylesheet" href="/css/style.css?v=1695719281318">
+    <link rel="stylesheet" href="/css/style.css?v=1695720379350">
 
     
 <meta name="generator" content="Hexo 6.3.0"><style>mjx-container[jax="SVG"] {
@@ -503,136 +503,68 @@ mjx-container[display="true"] + br {
 
 
       <p><escape><span id="more"></span><escape></escape></escape></p>
-<h2 id="introduction-to-hardware">Introduction to Hardware</h2>
-<p>DNN常有的結構包含Convolution和Fc
-Layer，而這兩種Layer的點積運算仰賴於MAC(乘法累加器)，而MAC會藏在ALU中。</p>
-<p>而一塊運算單元中，Hardware會有不少的ALU。對於Hardware的分類，作者將其分成兩大類，分別是Temporal
-Architecture和Spatial Architecture。</p>
-<p><img data-fancybox="gallery" src="https://i.imgur.com/4xaAk1x.png" alt="Temporal Architecture and Spatial Architecture" data-caption="Temporal Architecture and Spatial Architecture" loading="lazy"></p>
-<h3 id="temporal-architecture-and-spatial-architecture">Temporal
-Architecture and Spatial Architecture</h3>
-<p>Temporal
-Architure主要包含CPU和GPU，原因在於CPU和GPU常使用SIMD和SIMT的技術和最佳化演算法來節省運算時間。</p>
-<p>而Spatial Architure就是加速器，常用ASIC和FPGA實作，是透過將Register
-File和Control Logic放在ALU旁邊達到節省能耗的效果。</p>
-<h2 id="temporal-architecture">Temporal Architecture</h2>
-<p>對於Temporal Architecture，作者專注於演算法的最佳化討論。</p>
-<h3 id="fc-layer-and-convolutional-layer">FC Layer and Convolutional
-Layer</h3>
-<p>首先作者介紹FC Layer和Convolutional
-Layer是如何在CPU和GPU中做運算。</p>
-<p>FC
-Layer的部分，實際上就是2維的Input和Filter做內積，如果Input不是2維，像是包含了Channel和Batch
-Size的話，那就要將矩陣Flatten後變成2維，其中一維的大小是Batch
-Size。而CPU和GPU在處理內積時，就能使用SIMD和SIMT。</p>
-<p><img data-fancybox="gallery" src="https://i.imgur.com/MQJIFM5.png" alt="FC Layer Operation" data-caption="FC Layer Operation" loading="lazy"></p>
-<p>Convolutional
-Layer的部分，如果想要更進一步加速運算，可以將Convolution攤成1維陣列，Input攤成的對應的二維陣列，最後就能轉換成矩陣內積。缺點就是轉換後的Input
-Fmap會變大，尤其當有多個Filter時，就要有多次重複的Input Fmap。</p>
-<p><img data-fancybox="gallery" src="https://i.imgur.com/qv6b0rV.png" alt="FC Layer Operation" data-caption="FC Layer Operation" loading="lazy"></p>
-<h3 id="convolution-optimization">Convolution Optimization</h3>
-<p>接著作者對於矩陣內積提出了兩種最佳化的方法。一種是快速傅立葉變換，另一種是Strassen
-Algorithm。</p>
+<h2 id="Introduction-to-Hardware"><a href="#Introduction-to-Hardware" class="headerlink" title="Introduction to Hardware"></a>Introduction to Hardware</h2><p>DNN常有的結構包含Convolution和Fc Layer，而這兩種Layer的點積運算仰賴於MAC(乘法累加器)，而MAC會藏在ALU中。</p>
+<p>而一塊運算單元中，Hardware會有不少的ALU。對於Hardware的分類，作者將其分成兩大類，分別是Temporal Architecture和Spatial Architecture。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/4xaAk1x.png" alt="Temporal Architecture and Spatial Architecture" data-caption="Temporal Architecture and Spatial Architecture" loading="lazy">
+
+<h3 id="Temporal-Architecture-and-Spatial-Architecture"><a href="#Temporal-Architecture-and-Spatial-Architecture" class="headerlink" title="Temporal Architecture and Spatial Architecture"></a>Temporal Architecture and Spatial Architecture</h3><p>Temporal Architure主要包含CPU和GPU，原因在於CPU和GPU常使用SIMD和SIMT的技術和最佳化演算法來節省運算時間。</p>
+<p>而Spatial Architure就是加速器，常用ASIC和FPGA實作，是透過將Register File和Control Logic放在ALU旁邊達到節省能耗的效果。</p>
+<h2 id="Temporal-Architecture"><a href="#Temporal-Architecture" class="headerlink" title="Temporal Architecture"></a>Temporal Architecture</h2><p>對於Temporal Architecture，作者專注於演算法的最佳化討論。</p>
+<h3 id="FC-Layer-and-Convolutional-Layer"><a href="#FC-Layer-and-Convolutional-Layer" class="headerlink" title="FC Layer and Convolutional Layer"></a>FC Layer and Convolutional Layer</h3><p>首先作者介紹FC Layer和Convolutional Layer是如何在CPU和GPU中做運算。</p>
+<p>FC Layer的部分，實際上就是2維的Input和Filter做內積，如果Input不是2維，像是包含了Channel和Batch Size的話，那就要將矩陣Flatten後變成2維，其中一維的大小是Batch Size。而CPU和GPU在處理內積時，就能使用SIMD和SIMT。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/MQJIFM5.png" alt="FC Layer Operation" data-caption="FC Layer Operation" loading="lazy">
+
+<p>Convolutional Layer的部分，如果想要更進一步加速運算，可以將Convolution攤成1維陣列，Input攤成的對應的二維陣列，最後就能轉換成矩陣內積。缺點就是轉換後的Input Fmap會變大，尤其當有多個Filter時，就要有多次重複的Input Fmap。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/qv6b0rV.png" alt="FC Layer Operation" data-caption="FC Layer Operation" loading="lazy">
+
+<h3 id="Convolution-Optimization"><a href="#Convolution-Optimization" class="headerlink" title="Convolution Optimization"></a>Convolution Optimization</h3><p>接著作者對於矩陣內積提出了兩種最佳化的方法。一種是快速傅立葉變換，另一種是Strassen Algorithm。</p>
 <p>如何透過快速傅立葉變換進行內積的話，可以參考<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/300603589">這篇</a>，最後可以知道複雜度從<code>O(No^2 * Nf^2)</code>變成<code>O(No^2 * log No)</code>，其中<code>Nf</code>是Filter的長和寬度，<code>No</code>是Output的長度和寬度。</p>
 <p>另一種Strassen Algorithm的話，可以參考<a target="_blank" rel="noopener" href="https://www.csie.ntu.edu.tw/~wcchen/algorithm/strassen/strassen.html">這篇</a>，最後可以知道複雜度從<code>O(N^3)</code>變成<code>O(N^(log7/log2))</code>。</p>
-<p>從FFT的複雜度可以觀察到，<code>Nf^2</code>不一定比<code>log No</code>來的大，所以作者說要盡量在Filter比較大<code>(filter &gt; 5 * 5)</code>時使用FFT。而Strassen
-Algorithm是用在矩陣乘法，前面提到當矩陣內積轉換成矩陣乘法時，Input會變大，尤其在Filter大小越大時，Input變大速度特別快，所以Strassen
-Algorithm適合在Filter較小<code>(filter &lt; 3 * 3)</code>時使用。</p>
-<h2 id="spatial-architecture">Spatial Architecture</h2>
-<p>作者提到MAC在運作時，會從DRAM讀取3筆資料分別進行乘法和加法，最後再將1筆資料寫回DRAM，而從圖中可以看到各個單元的能耗比較，會發現DRAM的能耗會是ALU的上百倍。為了減少能耗，Spatial
-Architecture就此誕生，Spatial Architecture的特點就是將Register
-File和Control Logic直接放在ALU旁邊，組成Processing Engine(PE)。</p>
-<p><img data-fancybox="gallery" src="https://i.imgur.com/1MPRJW0.png" alt="Energy Consumption of Component" data-caption="Energy Consumption of Component" loading="lazy"></p>
-<h3 id="data-reuse">Data Reuse</h3>
-<p>既然PE中的Register File放在ALU旁邊，為了讓Register
-File內的東西可以重複被使用，所以作者探討了Data Reuse的時機。</p>
-<p>Data Reuse可以分成Convolutional Reuse，Fmap Reuse和Filter
-Reuse。Convolutional Reuse就是Convolutional
-Layer進行運算時，Filter和Input都會重複使用。而Fmap Reuse和Filter
-Reuse則是可能會有一筆資料對應到多筆Filter或是多筆資料對應到一筆Filter的情形。而Filter
-Reuse常見的情況出自於<code>Batch Size &gt; 1</code>的時候，就會有多筆資料一直使用同個Filter。</p>
-<p><img data-fancybox="gallery" src="https://i.imgur.com/1Yww7TW.png" alt="Data Reuse" data-caption="Data Reuse" loading="lazy"></p>
-<h3 id="term-explanation">Term Explanation</h3>
-<p>在介紹AI加速器的種類前，先簡單提AI加速器相關的術語。</p>
-<p>對於一般的電腦，如果有一個Program，被Compiler編譯後，得到Binary
-code，再拿去給Processor執行，而Processor的構造會被稱作Architecture。</p>
-<p>而AI加速器的邏輯跟上述的事情其實很像，首先會先把DNN透過Mapper，得到對應的Mapping，再將Mapping交給DNN
-Accelerator執行，而DNN Accelerator的構造會被稱作Dataflow。<br>
-<img data-fancybox="gallery" src="https://i.imgur.com/MpEw1mH.png" alt="Energy Consumption of Component" data-caption="Energy Consumption of Component" loading="lazy"></p>
-<h3 id="dataflow">Dataflow</h3>
-<p>關於AI加速器的Dataflow，主要可以分成4種主要架構，分別是Weight
-Stationary(WS)，Output Stationary(OS)，No Local Reuse(NLR)和Row
-Stationary(RS)。</p>
-<ol type="1">
-<li><p>Weight Stationary(WS)<br>
-WS的目標就是最小化讀Weights的能耗，也就是最大化Weights從Register
-File中取得的機會。<br>
-<img data-fancybox="gallery" src="https://i.imgur.com/HkZkjv8.png" alt="WS Dataflow" data-caption="WS Dataflow" loading="lazy"></p></li>
-<li><p>Output Stationary(OS)<br>
-OS的目標就是最小化讀寫Partial Sum的能耗，也就是最大化Partial
-Sum從Register File中取得的機會。<br>
-<img data-fancybox="gallery" src="https://i.imgur.com/AKHLFT0.png" alt="OS Dataflow" data-caption="OS Dataflow" loading="lazy"><br>
-其中，OS
-Dataflow又能根據Channel和Activation的數量，分成3種變體，分別是OSA，OSB，OSC。OSA
-Dataflow主要處理Convolution，OSC主要處理FC
-Layer，而OSB架構介在OSA和OSB中間。<br>
-<img data-fancybox="gallery" src="https://i.imgur.com/mVeGFkX.png" alt="OS Dataflow Detail" data-caption="OS Dataflow Detail" loading="lazy"></p></li>
-<li><p>No Local Reuse(NLR)<br>
-從RS和OS Dataflow看到，Register
-File可以減少能耗，但相對的會增加不少面積，因此產生了NLR，目標在於最大化Global
-Buffer儲存能力，最小化Off-Chip Memory Bandwidth。<br>
-<img data-fancybox="gallery" src="https://i.imgur.com/YZ3mI0R.png" alt="NLR Dataflow" data-caption="NLR Dataflow" loading="lazy"></p></li>
-<li><p>Row Stationary(RS)<br>
-RS的目標就是最大化所有類型的Data在RF中重複使用的機會。<br>
-舉個例子，下圖中1維Convolution的話，可以看到PE中的RF，裡面的Filter完全不動，只位移Input和Partial
-Sum來完成運算，而Filter和Input沒有位移很多，正是Data Reuse的展現。<br>
-<img data-fancybox="gallery" src="https://i.imgur.com/WJsCaqB.png" alt="RS Dataflow(1)" data-caption="RS Dataflow(1)" loading="lazy"><br>
-2維陣列的話，與1維陣列的不同，是使用了多個PE，然後Filter還是沒動，每次計算Row也只有位移Input和Partial
-Sum。<br>
-<img data-fancybox="gallery" src="https://i.imgur.com/6OfyrSJ.png" alt="RS Dataflow(2)" data-caption="RS Dataflow(2)" loading="lazy"><br>
-如果有多個Channel和Batch
-Size大於1的情況，就是透過連接和交錯，就能獲得對應的輸出。<br>
-<img data-fancybox="gallery" src="https://i.imgur.com/5evaqwN.png" alt="RS Dataflow(3)" data-caption="RS Dataflow(3)" loading="lazy"></p></li>
+<p>從FFT的複雜度可以觀察到，<code>Nf^2</code>不一定比<code>log No</code>來的大，所以作者說要盡量在Filter比較大<code>(filter &gt; 5 * 5)</code>時使用FFT。而Strassen Algorithm是用在矩陣乘法，前面提到當矩陣內積轉換成矩陣乘法時，Input會變大，尤其在Filter大小越大時，Input變大速度特別快，所以Strassen Algorithm適合在Filter較小<code>(filter &lt; 3 * 3)</code>時使用。</p>
+<h2 id="Spatial-Architecture"><a href="#Spatial-Architecture" class="headerlink" title="Spatial Architecture"></a>Spatial Architecture</h2><p>作者提到MAC在運作時，會從DRAM讀取3筆資料分別進行乘法和加法，最後再將1筆資料寫回DRAM，而從圖中可以看到各個單元的能耗比較，會發現DRAM的能耗會是ALU的上百倍。為了減少能耗，Spatial Architecture就此誕生，Spatial Architecture的特點就是將Register File和Control Logic直接放在ALU旁邊，組成Processing Engine(PE)。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/1MPRJW0.png" alt="Energy Consumption of Component" data-caption="Energy Consumption of Component" loading="lazy">
+
+<h3 id="Data-Reuse"><a href="#Data-Reuse" class="headerlink" title="Data Reuse"></a>Data Reuse</h3><p>既然PE中的Register File放在ALU旁邊，為了讓Register File內的東西可以重複被使用，所以作者探討了Data Reuse的時機。</p>
+<p>Data Reuse可以分成Convolutional Reuse，Fmap Reuse和Filter Reuse。Convolutional Reuse就是Convolutional Layer進行運算時，Filter和Input都會重複使用。而Fmap Reuse和Filter Reuse則是可能會有一筆資料對應到多筆Filter或是多筆資料對應到一筆Filter的情形。而Filter Reuse常見的情況出自於<code>Batch Size &gt; 1</code>的時候，就會有多筆資料一直使用同個Filter。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/1Yww7TW.png" alt="Data Reuse" data-caption="Data Reuse" loading="lazy">
+
+<h3 id="Term-Explanation"><a href="#Term-Explanation" class="headerlink" title="Term Explanation"></a>Term Explanation</h3><p>在介紹AI加速器的種類前，先簡單提AI加速器相關的術語。</p>
+<p>對於一般的電腦，如果有一個Program，被Compiler編譯後，得到Binary code，再拿去給Processor執行，而Processor的構造會被稱作Architecture。</p>
+<p>而AI加速器的邏輯跟上述的事情其實很像，首先會先把DNN透過Mapper，得到對應的Mapping，再將Mapping交給DNN Accelerator執行，而DNN Accelerator的構造會被稱作Dataflow。<br><img data-fancybox="gallery" src="https://i.imgur.com/MpEw1mH.png" alt="Energy Consumption of Component" data-caption="Energy Consumption of Component" loading="lazy"></p>
+<h3 id="Dataflow"><a href="#Dataflow" class="headerlink" title="Dataflow"></a>Dataflow</h3><p>關於AI加速器的Dataflow，主要可以分成4種主要架構，分別是Weight Stationary(WS)，Output Stationary(OS)，No Local Reuse(NLR)和Row Stationary(RS)。</p>
+<ol>
+<li><p>Weight Stationary(WS)<br>WS的目標就是最小化讀Weights的能耗，也就是最大化Weights從Register File中取得的機會。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/HkZkjv8.png" alt="WS Dataflow" data-caption="WS Dataflow" loading="lazy">
+</li>
+<li><p>Output Stationary(OS)<br>OS的目標就是最小化讀寫Partial Sum的能耗，也就是最大化Partial Sum從Register File中取得的機會。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/AKHLFT0.png" alt="OS Dataflow" data-caption="OS Dataflow" loading="lazy">
+其中，OS Dataflow又能根據Channel和Activation的數量，分成3種變體，分別是OSA，OSB，OSC。OSA Dataflow主要處理Convolution，OSC主要處理FC Layer，而OSB架構介在OSA和OSB中間。
+<img data-fancybox="gallery" src="https://i.imgur.com/mVeGFkX.png" alt="OS Dataflow Detail" data-caption="OS Dataflow Detail" loading="lazy">
+</li>
+<li><p>No Local Reuse(NLR)<br>從RS和OS Dataflow看到，Register File可以減少能耗，但相對的會增加不少面積，因此產生了NLR，目標在於最大化Global Buffer儲存能力，最小化Off-Chip Memory Bandwidth。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/YZ3mI0R.png" alt="NLR Dataflow" data-caption="NLR Dataflow" loading="lazy">
+</li>
+<li><p>Row Stationary(RS)<br>RS的目標就是最大化所有類型的Data在RF中重複使用的機會。<br>舉個例子，下圖中1維Convolution的話，可以看到PE中的RF，裡面的Filter完全不動，只位移Input和Partial Sum來完成運算，而Filter和Input沒有位移很多，正是Data Reuse的展現。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/WJsCaqB.png" alt="RS Dataflow(1)" data-caption="RS Dataflow(1)" loading="lazy">
+2維陣列的話，與1維陣列的不同，是使用了多個PE，然後Filter還是沒動，每次計算Row也只有位移Input和Partial Sum。
+<img data-fancybox="gallery" src="https://i.imgur.com/6OfyrSJ.png" alt="RS Dataflow(2)" data-caption="RS Dataflow(2)" loading="lazy">
+如果有多個Channel和Batch Size大於1的情況，就是透過連接和交錯，就能獲得對應的輸出。
+<img data-fancybox="gallery" src="https://i.imgur.com/5evaqwN.png" alt="RS Dataflow(3)" data-caption="RS Dataflow(3)" loading="lazy"></li>
 </ol>
-<h3 id="dataflow-example">Dataflow Example</h3>
-<p>作者為了講述Dataflow如何運行DNN，給了一個範例，Eyeriss DNN
-Accelerator，其PE Array大小為12*14。<br>
-<img data-fancybox="gallery" src="https://i.imgur.com/v6eyINS.png" alt="Eyeriss DNN accelerator" data-caption="Eyeriss DNN accelerator" loading="lazy"><br>
-這時會遇到兩個問題:</p>
-<ol type="1">
-<li><p>PE Array和Layer大小不同<br>
-像左圖，如果Layer很小，那就可以安排一次塞多張Layer到PE
-Array上。若像右圖，如果Layer很大，那就可以透過裁剪，把Layer塞到PE
-Array上。<br>
-<img data-fancybox="gallery" src="https://i.imgur.com/7VhpHmZ.png" alt="Replication & Folding" data-caption="Replication & Folding" loading="lazy"></p></li>
-<li><p>Data不知道要傳去哪個對應的PE Array<br>
-作者說可以使用Multicast
-Network解決這個問題，最簡單的做法就是廣播所有的Data，然後透過PE
-Array中的Control Logic篩選PE需要的Data。</p></li>
+<h3 id="Dataflow-Example"><a href="#Dataflow-Example" class="headerlink" title="Dataflow Example"></a>Dataflow Example</h3><p>作者為了講述Dataflow如何運行DNN，給了一個範例，Eyeriss DNN Accelerator，其PE Array大小為12*14。<br><img data-fancybox="gallery" src="https://i.imgur.com/v6eyINS.png" alt="Eyeriss DNN accelerator" data-caption="Eyeriss DNN accelerator" loading="lazy"><br>這時會遇到兩個問題:  </p>
+<ol>
+<li><p>PE Array和Layer大小不同<br>像左圖，如果Layer很小，那就可以安排一次塞多張Layer到PE Array上。若像右圖，如果Layer很大，那就可以透過裁剪，把Layer塞到PE Array上。</p>
+<img data-fancybox="gallery" src="https://i.imgur.com/7VhpHmZ.png" alt="Replication & Folding" data-caption="Replication & Folding" loading="lazy">
+</li>
+<li><p>Data不知道要傳去哪個對應的PE Array<br>作者說可以使用Multicast Network解決這個問題，最簡單的做法就是廣播所有的Data，然後透過PE Array中的Control Logic篩選PE需要的Data。</p>
+</li>
 </ol>
-<h3 id="dataflow-comparision">Dataflow Comparision</h3>
-<p>接著比較WS，OS，NLR和RS的能耗。</p>
-<p>下圖是在跑Convolutional
-Layer時，每個Dataflow能耗的比較。能看到RS因為最大化RF重複使用各種數據，RF能耗最大，但整體能耗最小。NLR因為沒有RF，資料都塞Buffer，所以Buffer能耗最大。剛剛有提過OSA
-Dataflow專門處理Convolution，所以OSA能耗比OSC小。<br>
-<img data-fancybox="gallery" src="https://i.imgur.com/ksk3LMN.png" alt="Energy consumption of Convotional Layer(1)" data-caption="Energy consumption of Convotional Layer(1)" loading="lazy"></p>
-<p>下圖也還是跑Convolutional
-Layer時，每個Dataflow能耗的比較。可以看到WS因為最大化RF重複使用Weight，所以Weight的能耗最小。OS因為最大化RF重複使用Partial
-Sum，所以Partial Sum的能耗最小。<br>
-<img data-fancybox="gallery" src="https://i.imgur.com/YmpSgeC.png" alt="Energy consumption of Convotional Layer(2)" data-caption="Energy consumption of Convotional Layer(2)" loading="lazy"></p>
-<p>下圖跟上圖不同在於，下圖是跑FC
-Layer時，每個Dataflow能耗的比較。因為OSC Dataflow專門處理FC
-Layer，所以OSC能耗比OSA小。<br>
-<img data-fancybox="gallery" src="https://i.imgur.com/Y9osx8H.png" alt="Energy consumption of FC Layer" data-caption="Energy consumption of FC Layer" loading="lazy"></p>
-<p>最後一張圖是在講述，用RS Dataflow跑AlexNet的能耗分析。可以看到L1 ~
-L5大多為Convolutional Layer，而Convolutional Layer的RF能耗高。L6 ~
-L8大多為FC Layer，而FC Layer的Dram能耗高。但是，比例上來說，L1 ~
-L5用了大部分的能耗。而未來的NN Model也是朝著越用越多Convolutional
-Layer的趨勢在走，所以作者覺得未來應該盡量改良Convolution。<br>
-<img data-fancybox="gallery" src="https://i.imgur.com/TWA5HA8.png" alt="Energy consumption of AlexNet" data-caption="Energy consumption of AlexNet" loading="lazy"></p>
-<h2 id="reference">Reference</h2>
-<p>Efficient Processing of Deep Neural Networks: A Tutorial and Survey,
-Part V. : <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1703.09039.pdf" class="uri">https://arxiv.org/pdf/1703.09039.pdf</a></p>
+<h3 id="Dataflow-Comparision"><a href="#Dataflow-Comparision" class="headerlink" title="Dataflow Comparision"></a>Dataflow Comparision</h3><p>接著比較WS，OS，NLR和RS的能耗。</p>
+<p>下圖是在跑Convolutional Layer時，每個Dataflow能耗的比較。能看到RS因為最大化RF重複使用各種數據，RF能耗最大，但整體能耗最小。NLR因為沒有RF，資料都塞Buffer，所以Buffer能耗最大。剛剛有提過OSA Dataflow專門處理Convolution，所以OSA能耗比OSC小。<br><img data-fancybox="gallery" src="https://i.imgur.com/ksk3LMN.png" alt="Energy consumption of Convotional Layer(1)" data-caption="Energy consumption of Convotional Layer(1)" loading="lazy"></p>
+<p>下圖也還是跑Convolutional Layer時，每個Dataflow能耗的比較。可以看到WS因為最大化RF重複使用Weight，所以Weight的能耗最小。OS因為最大化RF重複使用Partial Sum，所以Partial Sum的能耗最小。<br><img data-fancybox="gallery" src="https://i.imgur.com/YmpSgeC.png" alt="Energy consumption of Convotional Layer(2)" data-caption="Energy consumption of Convotional Layer(2)" loading="lazy"></p>
+<p>下圖跟上圖不同在於，下圖是跑FC Layer時，每個Dataflow能耗的比較。因為OSC Dataflow專門處理FC Layer，所以OSC能耗比OSA小。<br><img data-fancybox="gallery" src="https://i.imgur.com/Y9osx8H.png" alt="Energy consumption of FC Layer" data-caption="Energy consumption of FC Layer" loading="lazy"></p>
+<p>最後一張圖是在講述，用RS Dataflow跑AlexNet的能耗分析。可以看到L1 ~ L5大多為Convolutional Layer，而Convolutional Layer的RF能耗高。L6 ~ L8大多為FC Layer，而FC Layer的Dram能耗高。但是，比例上來說，L1 ~ L5用了大部分的能耗。而未來的NN Model也是朝著越用越多Convolutional Layer的趨勢在走，所以作者覺得未來應該盡量改良Convolution。<br><img data-fancybox="gallery" src="https://i.imgur.com/TWA5HA8.png" alt="Energy consumption of AlexNet" data-caption="Energy consumption of AlexNet" loading="lazy"></p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>Efficient Processing of Deep Neural Networks: A Tutorial and Survey, Part V. : <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1703.09039.pdf">https://arxiv.org/pdf/1703.09039.pdf</a></p>
 
       
   </article>
@@ -660,7 +592,7 @@ Part V. : <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1703.090
 </div>
 
   
-    <script async src="/js/copy-codeblock.js?v=1695719281247"></script>
+    <script async src="/js/copy-codeblock.js?v=1695720379280"></script>
   
 
   
@@ -699,9 +631,7 @@ Part V. : <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1703.090
                               <button class="mdui-fab catalog" style="overflow:unset;">
                                   <i class="nexmoefont icon-i-catalog"></i>
                                   <div class="nexmoe-toc">
-                                      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#introduction-to-hardware"><span class="toc-number">1.</span> <span class="toc-text">Introduction to Hardware</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#temporal-architecture-and-spatial-architecture"><span class="toc-number">1.1.</span> <span class="toc-text">Temporal
-Architecture and Spatial Architecture</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#temporal-architecture"><span class="toc-number">2.</span> <span class="toc-text">Temporal Architecture</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#fc-layer-and-convolutional-layer"><span class="toc-number">2.1.</span> <span class="toc-text">FC Layer and Convolutional
-Layer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#convolution-optimization"><span class="toc-number">2.2.</span> <span class="toc-text">Convolution Optimization</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#spatial-architecture"><span class="toc-number">3.</span> <span class="toc-text">Spatial Architecture</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#data-reuse"><span class="toc-number">3.1.</span> <span class="toc-text">Data Reuse</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#term-explanation"><span class="toc-number">3.2.</span> <span class="toc-text">Term Explanation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#dataflow"><span class="toc-number">3.3.</span> <span class="toc-text">Dataflow</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#dataflow-example"><span class="toc-number">3.4.</span> <span class="toc-text">Dataflow Example</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#dataflow-comparision"><span class="toc-number">3.5.</span> <span class="toc-text">Dataflow Comparision</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#reference"><span class="toc-number">4.</span> <span class="toc-text">Reference</span></a></li></ol>
+                                      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Introduction-to-Hardware"><span class="toc-number">1.</span> <span class="toc-text">Introduction to Hardware</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Temporal-Architecture-and-Spatial-Architecture"><span class="toc-number">1.1.</span> <span class="toc-text">Temporal Architecture and Spatial Architecture</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Temporal-Architecture"><span class="toc-number">2.</span> <span class="toc-text">Temporal Architecture</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#FC-Layer-and-Convolutional-Layer"><span class="toc-number">2.1.</span> <span class="toc-text">FC Layer and Convolutional Layer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Convolution-Optimization"><span class="toc-number">2.2.</span> <span class="toc-text">Convolution Optimization</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Spatial-Architecture"><span class="toc-number">3.</span> <span class="toc-text">Spatial Architecture</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Data-Reuse"><span class="toc-number">3.1.</span> <span class="toc-text">Data Reuse</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Term-Explanation"><span class="toc-number">3.2.</span> <span class="toc-text">Term Explanation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dataflow"><span class="toc-number">3.3.</span> <span class="toc-text">Dataflow</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dataflow-Example"><span class="toc-number">3.4.</span> <span class="toc-text">Dataflow Example</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dataflow-Comparision"><span class="toc-number">3.5.</span> <span class="toc-text">Dataflow Comparision</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">4.</span> <span class="toc-text">Reference</span></a></li></ol>
                                   </div>
                               </button>
                           
@@ -740,7 +670,7 @@ Layer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="
 
  
 
-<script async src="/js/app.js?v=1695719281319"></script>
+<script async src="/js/app.js?v=1695720379352"></script>
 
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2058306854838448" crossorigin="anonymous"></script>
 

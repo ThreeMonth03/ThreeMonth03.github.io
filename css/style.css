@@ -1084,6 +1084,10 @@ body {
   flex: 1;
   text-align: center;
   color: #a3a8ae;
+  background-color: var(--color-primary-bg);
+  margin: 2px;
+  border-radius: var(--radius);
+  box-shadow: 0 0 1rem var(--color-primary-bg);
 }
 #nexmoe-header .nexmoe-count div span {
   color: #363636;
