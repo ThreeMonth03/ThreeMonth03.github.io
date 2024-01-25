@@ -29,9 +29,9 @@
 <link rel="stylesheet" href="/lib/mdui_043tiny/mdui.css">
 
 
-    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1706205165251">
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1706205223769">
     
-    <link rel="stylesheet" href="/css/style.css?v=1706205165251">
+    <link rel="stylesheet" href="/css/style.css?v=1706205223769">
 
     
 <meta name="generator" content="Hexo 6.3.0"><style>mjx-container[jax="SVG"] {
@@ -480,52 +480,75 @@ mjx-container[display="true"] + br {
     <a><i class="nexmoefont icon-calendar-fill"></i>2023年08月27日</a>
 </div>
       
-    <a><i class="nexmoefont icon-areachart"></i>約689字</a>
+    <a><i class="nexmoefont icon-areachart"></i>約692字</a>
     <a><i class="nexmoefont icon-time-circle-fill"></i>大概需要3分鐘</a>
 
 
       <p><escape><span id="more"></span><escape></escape></escape></p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在實驗室第9次新生訓練時，學長介紹了nni，並且讓我們回家練習使用nni。作業是透過cnn網路與CIFAR10的dataset，搭配nni來找尋最佳超參數。</p>
-<h2 id="作業檔案簡介"><a href="#作業檔案簡介" class="headerlink" title="作業檔案簡介"></a>作業檔案簡介</h2><p>Github: <a target="_blank" rel="noopener" href="https://github.com/ThreeMonth03/hyperparameter_tuning">https://github.com/ThreeMonth03/hyperparameter_tuning</a><br>config資料夾放了requirement.txt。<br>src資料夾放了source code，裡面包含cnn.py，模型的訓練檔，和nni_search.py，裡面包含api用來控制超參數。<br>log資料夾下，放了nni的experiment log，可以觀看歷史training紀錄。</p>
-<h2 id="如何從頭復現nni-training"><a href="#如何從頭復現nni-training" class="headerlink" title="如何從頭復現nni training"></a>如何從頭復現nni training</h2><ol>
+<h2 id="前言">前言</h2>
+<p>在實驗室第9次新生訓練時，學長介紹了nni，並且讓我們回家練習使用nni。作業是透過cnn網路與CIFAR10的dataset，搭配nni來找尋最佳超參數。</p>
+<h2 id="作業檔案簡介">作業檔案簡介</h2>
+<p>Github: <a target="_blank" rel="noopener" href="https://github.com/ThreeMonth03/hyperparameter_tuning" class="uri">https://github.com/ThreeMonth03/hyperparameter_tuning</a><br>
+config資料夾放了requirement.txt。<br>
+src資料夾放了source
+code，裡面包含cnn.py，模型的訓練檔，和nni_search.py，裡面包含api用來控制超參數。<br>
+log資料夾下，放了nni的experiment log，可以觀看歷史training紀錄。</p>
+<h2 id="如何從頭復現nni-training">如何從頭復現nni training</h2>
+<ol type="1">
 <li><code>git clone https://github.com/ThreeMonth03/hyperparameter_tuning.git</code></li>
-<li><code>docker-compose up</code>，記得port和container/image name要做更改，這裡值得注意，別用<code>docker-compose up -d</code>，不然experiment log肯定不會存下來。</li>
+<li><code>docker-compose up</code>，記得port和container/image
+name要做更改，這裡值得注意，別用<code>docker-compose up -d</code>，不然experiment
+log肯定不會存下來。</li>
 <li>瀏覽器中打開<code>localhost:[your_port]</code>查看nni的結果。</li>
 </ol>
-<h2 id="如何直接看我的training-log"><a href="#如何直接看我的training-log" class="headerlink" title="如何直接看我的training log"></a>如何直接看我的training log</h2><ol>
+<h2 id="如何直接看我的training-log">如何直接看我的training log</h2>
+<ol type="1">
 <li><code>git clone https://github.com/ThreeMonth03/hyperparameter_tuning.git</code></li>
-<li>按照nni_search.py內的指示做適當的註解和解除註解，意思大概就是把training的設定註解，觀看experiment log的部分解除註解，也就是解除註解<code>experiment.view(experiment_id, port=8323, non_blocking=False)</code>這行。</li>
-<li><code>docker-compose up</code>，記得port和container/image name要做更改。</li>
+<li>按照nni_search.py內的指示做適當的註解和解除註解，意思大概就是把training的設定註解，觀看experiment
+log的部分解除註解，也就是解除註解<code>experiment.view(experiment_id, port=8323, non_blocking=False)</code>這行。</li>
+<li><code>docker-compose up</code>，記得port和container/image
+name要做更改。</li>
 <li>瀏覽器中打開<code>localhost:[your_port]</code>查看nni的結果。</li>
 </ol>
-<h2 id="Experiment-Detail"><a href="#Experiment-Detail" class="headerlink" title="Experiment Detail"></a>Experiment Detail</h2><h3 id="Search-Space-and-Tuner"><a href="#Search-Space-and-Tuner" class="headerlink" title="Search Space and Tuner"></a>Search Space and Tuner</h3><ol>
+<h2 id="experiment-detail">Experiment Detail</h2>
+<h3 id="search-space-and-tuner">Search Space and Tuner</h3>
+<ol type="1">
 <li>lr : 0.0001~0.1 , log uniform</li>
 <li>momentum : 0~1 , uniform</li>
 <li>batch size : 4 , 8 , 16</li>
 <li>Tuner : TPE</li>
 </ol>
-<h3 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h3><ul>
-<li>Best hyperparameter</li>
+<h3 id="result">Result</h3>
+<ul>
+<li>Best hyperparameter<br>
+</li>
 </ul>
-<ol>
+<ol type="1">
 <li>lr : 0.0024724673142795927</li>
 <li>momentum : 0.31344560117709097</li>
 <li>batch_size : 8</li>
 </ol>
 <ul>
-<li>Test Accuracy: 65%  </li>
-<li>ScreenShot  <img src="https://i.imgur.com/o8f06cB.png"> 
+<li>Test Accuracy: 65%<br>
+</li>
+<li>ScreenShot<br>
+<img src="https://i.imgur.com/o8f06cB.png"><br>
 <img src="https://i.imgur.com/JzeBAuD.png"></li>
 </ul>
-<h2 id="筆記"><a href="#筆記" class="headerlink" title="筆記"></a>筆記</h2><h3 id="如何用python-api調hyperparameter"><a href="#如何用python-api調hyperparameter" class="headerlink" title="如何用python api調hyperparameter"></a>如何用python api調hyperparameter</h3><p>nni可以透過termial的指令輸入來控制hyperparameter，也可以透過python api來控制hyperparameter，以下是透過api控制的code。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#nni_search.py</span><br>search_space = {<br>    <span class="hljs-string">'lr'</span>: {<span class="hljs-string">'_type'</span>: <span class="hljs-string">'loguniform'</span>, <span class="hljs-string">'_value'</span>: [<span class="hljs-number">0.0001</span>, <span class="hljs-number">0.1</span>]},<br>    <span class="hljs-string">'momentum'</span>: {<span class="hljs-string">'_type'</span>: <span class="hljs-string">'uniform'</span>, <span class="hljs-string">'_value'</span>: [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>]},<br>    <span class="hljs-string">'batch_size'</span>: {<span class="hljs-string">"_type"</span>: <span class="hljs-string">"choice"</span>, <span class="hljs-string">"_value"</span>: [<span class="hljs-number">4</span>, <span class="hljs-number">8</span>, <span class="hljs-number">16</span>]},<br>}<span class="hljs-comment">#Modify search_space</span><br><span class="hljs-keyword">import</span> nni<br><span class="hljs-keyword">from</span> nni.experiment <span class="hljs-keyword">import</span> Experiment<br>experiment = Experiment(<span class="hljs-string">'local'</span>)<span class="hljs-comment">#local training</span><br>experiment.config.trial_command = <span class="hljs-string">'python src/cnn.py'</span><span class="hljs-comment"># target model</span><br>experiment.config.trial_code_directory = <span class="hljs-string">'.'</span> <span class="hljs-comment">#model directory</span><br>experiment.config.search_space = search_space<span class="hljs-comment"># search space</span><br>experiment.config.tuner.name = <span class="hljs-string">'TPE'</span><br>experiment.config.tuner.class_args[<span class="hljs-string">'optimize_mode'</span>] = <span class="hljs-string">'maximize'</span><br>experiment.config.max_trial_number = <span class="hljs-number">50</span><br>experiment.config.trial_concurrency = <span class="hljs-number">10</span><br>experiment.config.trial_gpu_number = <span class="hljs-number">3</span><span class="hljs-comment"># 3 GPU device</span><br>experiment.config.debug = <span class="hljs-literal">True</span><br>experiment.config.experiment_working_directory = <span class="hljs-string">'./log'</span> <span class="hljs-comment"># The position where the log store</span><br>experiment.config.training_service.use_active_gpu = <span class="hljs-literal">True</span><br>experiment.config.training_service.max_trial_number_per_gpu = <span class="hljs-number">10</span><br>experiment.run(<span class="hljs-number">8323</span>)<span class="hljs-comment">#port</span><br><span class="hljs-built_in">print</span>(experiment.get_status())<br><span class="hljs-built_in">print</span>(experiment.get_job_statistics())<br><span class="hljs-built_in">print</span>(experiment.list_trial_jobs())<br><br><span class="hljs-built_in">input</span>(<span class="hljs-string">'Press enter to quit'</span>)<span class="hljs-comment">#Without this line, you could not watch the GUI interface after process exiting.</span><br>experiment.stop()<br></code></pre></td></tr></table></figure>
-<p>至於被控制的model，也要另外加一些行數來控制參數。</p>
+<h2 id="筆記">筆記</h2>
+<h3 id="如何用python-api調hyperparameter">如何用python
+api調hyperparameter</h3>
+<p>nni可以透過termial的指令輸入來控制hyperparameter，也可以透過python
+api來控制hyperparameter，以下是透過api控制的code。<br>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#nni_search.py</span><br>search_space = {<br>    <span class="hljs-string">'lr'</span>: {<span class="hljs-string">'_type'</span>: <span class="hljs-string">'loguniform'</span>, <span class="hljs-string">'_value'</span>: [<span class="hljs-number">0.0001</span>, <span class="hljs-number">0.1</span>]},<br>    <span class="hljs-string">'momentum'</span>: {<span class="hljs-string">'_type'</span>: <span class="hljs-string">'uniform'</span>, <span class="hljs-string">'_value'</span>: [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>]},<br>    <span class="hljs-string">'batch_size'</span>: {<span class="hljs-string">"_type"</span>: <span class="hljs-string">"choice"</span>, <span class="hljs-string">"_value"</span>: [<span class="hljs-number">4</span>, <span class="hljs-number">8</span>, <span class="hljs-number">16</span>]},<br>}<span class="hljs-comment">#Modify search_space</span><br><span class="hljs-keyword">import</span> nni<br><span class="hljs-keyword">from</span> nni.experiment <span class="hljs-keyword">import</span> Experiment<br>experiment = Experiment(<span class="hljs-string">'local'</span>)<span class="hljs-comment">#local training</span><br>experiment.config.trial_command = <span class="hljs-string">'python src/cnn.py'</span><span class="hljs-comment"># target model</span><br>experiment.config.trial_code_directory = <span class="hljs-string">'.'</span> <span class="hljs-comment">#model directory</span><br>experiment.config.search_space = search_space<span class="hljs-comment"># search space</span><br>experiment.config.tuner.name = <span class="hljs-string">'TPE'</span><br>experiment.config.tuner.class_args[<span class="hljs-string">'optimize_mode'</span>] = <span class="hljs-string">'maximize'</span><br>experiment.config.max_trial_number = <span class="hljs-number">50</span><br>experiment.config.trial_concurrency = <span class="hljs-number">10</span><br>experiment.config.trial_gpu_number = <span class="hljs-number">3</span><span class="hljs-comment"># 3 GPU device</span><br>experiment.config.debug = <span class="hljs-literal">True</span><br>experiment.config.experiment_working_directory = <span class="hljs-string">'./log'</span> <span class="hljs-comment"># The position where the log store</span><br>experiment.config.training_service.use_active_gpu = <span class="hljs-literal">True</span><br>experiment.config.training_service.max_trial_number_per_gpu = <span class="hljs-number">10</span><br>experiment.run(<span class="hljs-number">8323</span>)<span class="hljs-comment">#port</span><br><span class="hljs-built_in">print</span>(experiment.get_status())<br><span class="hljs-built_in">print</span>(experiment.get_job_statistics())<br><span class="hljs-built_in">print</span>(experiment.list_trial_jobs())<br><br><span class="hljs-built_in">input</span>(<span class="hljs-string">'Press enter to quit'</span>)<span class="hljs-comment">#Without this line, you could not watch the GUI interface after process exiting.</span><br>experiment.stop()<br></code></pre></td></tr></table></figure><br>
+至於被控制的model，也要另外加一些行數來控制參數。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#cnn.py</span><br><span class="hljs-keyword">import</span> nni<br><span class="hljs-comment">#......</span><br>params = {<br>    <span class="hljs-string">'lr'</span>: <span class="hljs-number">0.001</span>,<br>    <span class="hljs-string">'momentum'</span>: <span class="hljs-number">0</span>,<br>    <span class="hljs-string">'batch_size'</span>: <span class="hljs-number">4</span>,<br>}<br>optimized_params = nni.get_next_parameter()<br>params.update(optimized_params)<br><span class="hljs-built_in">print</span>(params)<br><span class="hljs-comment">#......</span><br>epoches = <span class="hljs-number">20</span><br><span class="hljs-comment">#Send nni parameter to the parameter in the model.</span><br>batch_size = params[<span class="hljs-string">'batch_size'</span>]<br>lr = params[<span class="hljs-string">'lr'</span>]<br>momentum = params[<span class="hljs-string">'momentum'</span>]<br><span class="hljs-comment">#......</span><br><span class="hljs-comment">#Test</span><br><span class="hljs-keyword">with</span> torch.no_grad():<br>    <span class="hljs-keyword">for</span> data <span class="hljs-keyword">in</span> testloader:<br>        images, labels = data[<span class="hljs-number">0</span>].to(device), data[<span class="hljs-number">1</span>].to(device)<br>        outputs = net(images)<br>        _, predicted = torch.<span class="hljs-built_in">max</span>(outputs.data, <span class="hljs-number">1</span>)<br>        total += labels.size(<span class="hljs-number">0</span>)<br>        correct += (predicted == labels).<span class="hljs-built_in">sum</span>().item()<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f'Accuracy of the network on the 10000 test images: <span class="hljs-subst">{<span class="hljs-number">100</span> * correct // total}</span> %'</span>)<br><span class="hljs-comment">#Report accuarcy to nni</span><br>nni.report_final_result(<span class="hljs-number">100</span> * correct // total)<br></code></pre></td></tr></table></figure>
-
-<h2 id="後記"><a href="#後記" class="headerlink" title="後記"></a>後記</h2><p>其實很久以前就知道有自動找參數的api了，只是一直沒有嘗試過。經過這次學長給的nni練習，讓我快速上手調參的方法，以後再也不用手動調參了。</p>
-<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://nni.readthedocs.io/en/stable/">https://nni.readthedocs.io/en/stable/</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/microsoft/nni">https://github.com/microsoft/nni</a></li>
+<h2 id="後記">後記</h2>
+<p>其實很久以前就知道有自動找參數的api了，只是一直沒有嘗試過。經過這次學長給的nni練習，讓我快速上手調參的方法，以後再也不用手動調參了。</p>
+<h2 id="reference">Reference</h2>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://nni.readthedocs.io/en/stable/" class="uri">https://nni.readthedocs.io/en/stable/</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/microsoft/nni" class="uri">https://github.com/microsoft/nni</a></li>
 </ol>
 
       
@@ -554,7 +577,7 @@ mjx-container[display="true"] + br {
 </div>
 
   
-    <script async src="/js/copy-codeblock.js?v=1706205165191"></script>
+    <script async src="/js/copy-codeblock.js?v=1706205223709"></script>
   
 
   
@@ -593,7 +616,8 @@ mjx-container[display="true"] + br {
                               <button class="mdui-fab catalog" style="overflow:unset;">
                                   <i class="nexmoefont icon-i-catalog"></i>
                                   <div class="nexmoe-toc">
-                                      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%9C%E6%A5%AD%E6%AA%94%E6%A1%88%E7%B0%A1%E4%BB%8B"><span class="toc-number">2.</span> <span class="toc-text">作業檔案簡介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%BE%9E%E9%A0%AD%E5%BE%A9%E7%8F%BEnni-training"><span class="toc-number">3.</span> <span class="toc-text">如何從頭復現nni training</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E7%9B%B4%E6%8E%A5%E7%9C%8B%E6%88%91%E7%9A%84training-log"><span class="toc-number">4.</span> <span class="toc-text">如何直接看我的training log</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Experiment-Detail"><span class="toc-number">5.</span> <span class="toc-text">Experiment Detail</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Search-Space-and-Tuner"><span class="toc-number">5.1.</span> <span class="toc-text">Search Space and Tuner</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Result"><span class="toc-number">5.2.</span> <span class="toc-text">Result</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AD%86%E8%A8%98"><span class="toc-number">6.</span> <span class="toc-text">筆記</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E7%94%A8python-api%E8%AA%BFhyperparameter"><span class="toc-number">6.1.</span> <span class="toc-text">如何用python api調hyperparameter</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%8C%E8%A8%98"><span class="toc-number">7.</span> <span class="toc-text">後記</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">8.</span> <span class="toc-text">Reference</span></a></li></ol>
+                                      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%9C%E6%A5%AD%E6%AA%94%E6%A1%88%E7%B0%A1%E4%BB%8B"><span class="toc-number">2.</span> <span class="toc-text">作業檔案簡介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%BE%9E%E9%A0%AD%E5%BE%A9%E7%8F%BEnni-training"><span class="toc-number">3.</span> <span class="toc-text">如何從頭復現nni training</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E7%9B%B4%E6%8E%A5%E7%9C%8B%E6%88%91%E7%9A%84training-log"><span class="toc-number">4.</span> <span class="toc-text">如何直接看我的training log</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#experiment-detail"><span class="toc-number">5.</span> <span class="toc-text">Experiment Detail</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#search-space-and-tuner"><span class="toc-number">5.1.</span> <span class="toc-text">Search Space and Tuner</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#result"><span class="toc-number">5.2.</span> <span class="toc-text">Result</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AD%86%E8%A8%98"><span class="toc-number">6.</span> <span class="toc-text">筆記</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E7%94%A8python-api%E8%AA%BFhyperparameter"><span class="toc-number">6.1.</span> <span class="toc-text">如何用python
+api調hyperparameter</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%8C%E8%A8%98"><span class="toc-number">7.</span> <span class="toc-text">後記</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#reference"><span class="toc-number">8.</span> <span class="toc-text">Reference</span></a></li></ol>
                                   </div>
                               </button>
                           
@@ -632,7 +656,7 @@ mjx-container[display="true"] + br {
 
  
 
-<script async src="/js/app.js?v=1706205165254"></script>
+<script async src="/js/app.js?v=1706205223772"></script>
 
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2058306854838448" crossorigin="anonymous"></script>
 
