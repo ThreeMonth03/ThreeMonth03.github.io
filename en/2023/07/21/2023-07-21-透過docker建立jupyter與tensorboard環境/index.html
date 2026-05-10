@@ -1,0 +1,785 @@
+  <!DOCTYPE html>
+  <html lang="en"  
+      data-theme-mode="auto"
+  >
+  <head>
+  <meta charset="utf-8">
+  
+  
+  
+  <script>window.REIMU_CONFIG = {};window.REIMU_CONFIG.icon_font = '4552607_ex15nbittbh';window.REIMU_CONFIG.clipboard_tips = {"success":{"zh-CN":"复制成功 (*^▽^*)","en":"Copy successfully (*^▽^*)","zh-TW":"複製成功 (*^▽^*)"},"fail":{"zh-CN":"复制失败 (ﾟ⊿ﾟ)ﾂ","en":"Copy failed (ﾟ⊿ﾟ)ﾂ","zh-TW":"複製失敗 (ﾟ⊿ﾟ)ﾂ"},"copyright":{"enable":false,"count":50,"license_type":"by-nc-sa"}};window.REIMU_CONFIG.clipboard_tips.copyright.content = '本部落格所有文章除特別聲明外，均採用 BY-NC-SA 授權協議。轉載請註明出處！';window.REIMU_CONFIG.code_block = {"expand":true};window.REIMU_CONFIG.base = 'https://www.threemonth03.com';window.REIMU_CONFIG.relative = '/';window.REIMU_CONFIG.i18n_languages = ["en","zh-TW"];</script>
+  <title>
+    透過docker建立jupyter與tensorboard環境 | 張君實
+  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic|Noto Serif SC:400,400italic,700,700italic&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic|Noto Serif SC:400,400italic,700,700italic&display=swap" media="print" onload="this.media='all'">
+    <link rel="preload" href="//at.alicdn.com/t/c/font_4552607_ex15nbittbh.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+    
+<link rel="stylesheet" href="/css/loader.css">
+
+    <meta name="description" content="前言這篇筆記整理如何用 Docker Compose 建立 Jupyter 與 TensorBoard 環境，並透過 local forwarding 在本機瀏覽器使用遠端服務。 範例 repo 放在 ThreeMonth03&#x2F;Docker_example。 專案結構這個 repository 裡有幾個重點：  jupyter&#x2F;：Jupyter 服務的 Dockerfile。 ten">
+<meta property="og:type" content="article">
+<meta property="og:title" content="透過docker建立jupyter與tensorboard環境">
+<meta property="og:url" content="https://www.threemonth03.com/en/2023/07/21/2023-07-21-%E9%80%8F%E9%81%8Edocker%E5%BB%BA%E7%AB%8Bjupyter%E8%88%87tensorboard%E7%92%B0%E5%A2%83/index.html">
+<meta property="og:site_name" content="張君實">
+<meta property="og:description" content="前言這篇筆記整理如何用 Docker Compose 建立 Jupyter 與 TensorBoard 環境，並透過 local forwarding 在本機瀏覽器使用遠端服務。 範例 repo 放在 ThreeMonth03&#x2F;Docker_example。 專案結構這個 repository 裡有幾個重點：  jupyter&#x2F;：Jupyter 服務的 Dockerfile。 ten">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://johnliu55.tw/ssh-tunnel/images/local_scenario1_problem.png">
+<meta property="og:image" content="https://johnliu55.tw/ssh-tunnel/images/local_scenario1_solved.png">
+<meta property="article:published_time" content="2023-07-20T19:18:00.000Z">
+<meta property="article:modified_time" content="2026-05-10T14:12:45.329Z">
+<meta property="article:author" content="張君實">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Jupyter">
+<meta property="article:tag" content="TensorBoard">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://johnliu55.tw/ssh-tunnel/images/local_scenario1_problem.png">
+    <link rel="alternate" href="/atom.xml" title="張君實" type="application/atom+xml">
+    <link rel="shortcut icon" href="/images/favicon.ico">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  <link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css" integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei+Zx/1oA/0l8ysE" crossorigin="anonymous">
+    
+<script src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js" integrity="sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8" crossorigin="anonymous"></script>
+
+    
+<link rel="stylesheet" href="https://npm.webcache.cn/@reimujs/aos@0.1.2/dist/aos.css" integrity="sha384-GMRP93c6Hkz9JVKGAuRR3nTS7M07RwPgTFenXiosjq2VbVgvdDNcz1g6Mkj8AONa" crossorigin="anonymous">
+
+    <link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.css" integrity="sha384-tLMkTWh2pfXNWGFlUS0w1TFtRG5xZ9lPWFOooj+vDDLIL+xBGQU/voDBY5XE2lVh" crossorigin="anonymous">
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+  <body>
+      <div id='loader'>
+    <div class="loading-left-bg loading-bg"></div>
+    <div class="loading-right-bg loading-bg"></div>
+    <div class="spinner-box">
+      <div class="loading-taichi rotate">
+          <svg width="150" height="150" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="https://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+            <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
+            <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
+           M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
+          </svg>
+      </div>
+      <div class="loading-word">Loading...</div>
+    </div>
+  </div>
+  <script>
+    var time = null;
+    var loaderEl = document.getElementById('loader');
+    var startLoading = () => {
+      time = Date.now();
+      loaderEl.classList.remove("loading");
+    }
+    var hideLoader = () => {
+      document.body.style.overflow = 'auto';
+      loader.classList.add('loading');
+    };
+
+    var endLoading = () => {
+      if (!time) {
+        hideLoader();
+      } else {
+        if (Date.now() - time > 500) {
+          time = null;
+          hideLoader();
+        } else {
+          setTimeout(endLoading, 500 - (Date.now() - time));
+          time = null;
+        }
+      }
+    }
+    window.addEventListener('DOMContentLoaded', endLoading);
+    loaderEl.addEventListener('click', endLoading);
+  </script>
+<div id="copy-tooltip"></div>
+<div id="heatmap-tooltip"></div>
+
+
+    <div id="container">
+      <div id="wrap">
+        <div id="header-nav">
+  <nav id="main-nav" aria-label="Primary navigation">
+        <a class="main-nav-link-wrap" href="/en/">
+          <div class="main-nav-icon icon-taichi"></div>
+          <span class="main-nav-link">Home</span>
+        </a>
+        <a class="main-nav-link-wrap" href="/en/archives">
+          <div class="main-nav-icon icon-taichi"></div>
+          <span class="main-nav-link">Archives</span>
+        </a>
+        <a class="main-nav-link-wrap" href="/en/note.html">
+          <div class="main-nav-icon icon-taichi"></div>
+          <span class="main-nav-link">筆記</span>
+        </a>
+        <a class="main-nav-link-wrap" href="/en/about.html">
+          <div class="main-nav-icon icon-taichi"></div>
+          <span class="main-nav-link">About</span>
+        </a>
+    <a id="main-nav-toggle" class="nav-icon" aria-label="Toggle navigation" role="button"></a>
+  </nav>
+  <nav id="sub-nav" aria-label="Secondary navigation">
+      <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed" aria-label="RSS Feed" target="_blank"></a>
+      <a id="nav-search-btn" class="nav-icon popup-trigger" title="Search" aria-label="Search"></a>
+  </nav>
+    <nav id="i18n-nav" aria-label="Language selection">
+      <div class="custom-dropdown">
+        <div class="select-selected" id="select-selected" role="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language menu">
+          <span id="nav-language-btn" class="nav-icon" style="padding: 0 20px 0 0"></span>
+          <span id="selected-lang">English</span>
+        </div>
+        <ul class="select-items" id="select-items" role="listbox" aria-label="Languages">
+            <li data-value="zh-CN" role="option" aria-selected="false">简体中文</li>
+            <li data-value="en" role="option" class="selected" aria-selected="true">English</li>
+            <li data-value="zh-TW" role="option" aria-selected="false">正體中文</li>
+        </ul>
+      </div>
+      <script>
+        var selectSelected = document.getElementById("select-selected");
+        var selectedLang = document.getElementById("selected-lang");
+        var selectItems = document.getElementById("select-items");
+        var selectOptions = selectItems.querySelectorAll("li");
+
+        selectSelected.addEventListener("click", () => {
+          selectItems.classList.toggle("show");
+          var expanded = selectSelected.getAttribute("aria-expanded") === "true";
+          selectSelected.setAttribute("aria-expanded", (!expanded).toString());
+        });
+
+        selectOptions.forEach((item) => {
+          item.addEventListener("click", () => {
+            const langMap = {};
+              langMap['zh-CN'] = '/2023/07/21/2023-07-21-透過docker建立jupyter與tensorboard環境/';
+              langMap['en'] = '/en/2023/07/21/2023-07-21-透過docker建立jupyter與tensorboard環境/';
+              langMap['zh-TW'] = '/zh-TW/2023/07/21/2023-07-21-透過docker建立jupyter與tensorboard環境/';
+            selectedLang.textContent = item.textContent;
+            selectItems.classList.remove("show");
+            selectOptions.forEach((option) => {
+              option.classList.remove("selected");
+            });
+            item.classList.add("selected");
+            window.location = langMap[item.dataset.value];
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!event.target.closest(".custom-dropdown")) {
+            selectItems.classList.remove("show");
+            selectSelected.setAttribute("aria-expanded", "false");
+          }
+        });
+      </script>
+    </nav>
+</div>
+<header id="header" aria-label="Site header">
+    <picture></picture>
+    <img style="visibility:hidden"></img>
+  <div id="header-outer">
+    <div id="header-title">
+          <span id="logo">
+            <h1 data-aos="slide-up">透過docker建立jupyter與tensorboard環境</h1>
+          </span>
+        <h2 id="subtitle-wrap" data-aos="slide-down">
+        </h2>
+    </div>
+  </div>
+</header>
+
+        <div id="content" aria-label="Page content" class="sidebar-left"  >
+          <aside id="sidebar" aria-label="Sidebar">
+  <div class="sidebar-wrapper-container sticky">
+      <meting-js
+        theme="var(--color-link)"
+        id="2265921590"
+        server="netease"
+        type="playlist"
+        
+        
+        
+        
+        order="random"
+        
+        
+        
+        list-folded="true"
+        
+      ></meting-js>
+  <div class="sidebar-wrapper">
+    <div class="sidebar-wrap" data-aos="fade-up">
+          <div class="sidebar-toc-sidebar"><h3 class="toc-title">Contents</h3>
+<div class="sidebar-toc-wrapper toc-div-class" >
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%88%E6%A1%88%E7%B5%90%E6%A7%8B"><span class="toc-number">2.</span> <span class="toc-text">專案結構</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%B7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">執行流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Local-Forwarding"><span class="toc-number">4.</span> <span class="toc-text">Local Forwarding</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Jupyter-%E8%88%87-TensorBoard-%E6%8C%87%E4%BB%A4"><span class="toc-number">5.</span> <span class="toc-text">Jupyter 與 TensorBoard 指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Image-%E8%88%87-Container"><span class="toc-number">6.</span> <span class="toc-text">Image 與 Container</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8-Image-%E6%8C%87%E4%BB%A4"><span class="toc-number">6.1.</span> <span class="toc-text">常用 Image 指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dockerfile-%E7%AF%84%E4%BE%8B"><span class="toc-number">6.2.</span> <span class="toc-text">Dockerfile 範例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8-Container-%E6%8C%87%E4%BB%A4"><span class="toc-number">6.3.</span> <span class="toc-text">常用 Container 指令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Docker-Compose"><span class="toc-number">7.</span> <span class="toc-text">Docker Compose</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#docker-compose-yml-%E7%AF%84%E4%BE%8B"><span class="toc-number">7.1.</span> <span class="toc-text">docker-compose.yml 範例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E7%B5%90"><span class="toc-number">8.</span> <span class="toc-text">小結</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">9.</span> <span class="toc-text">Reference</span></a></li></ol>
+</div>
+</div>
+          <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img data-src="/avatar/avatar.webp" data-sizes="auto" alt="張君實" class="lazyload">
+  <div class="sidebar-author-name">張君實</div>
+  <div class="sidebar-description">張君實的技術筆記、研究閱讀與開發紀錄。</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>Post</div>
+    <div class="sidebar-state-number">5</div>
+  </div>
+  <div class="sidebar-state-category">
+    <div>Category</div>
+    <div class="sidebar-state-number">4</div>
+  </div>
+  <div class="sidebar-state-tag">
+    <div>Tag</div>
+    <div class="sidebar-state-number">12</div>
+  </div>
+</div>
+<div class="sidebar-social" >
+    <div class="icon-github sidebar-social-icon">
+      <a href=https://github.com/threemonth03/ itemprop="url" target="_blank" aria-label="github" rel="noopener nofollow noreferrer"></a>
+    </div>
+    <div class="icon-twitter sidebar-social-icon">
+      <a href=https://twitter.com/Thre3Month itemprop="url" target="_blank" aria-label="twitter" rel="noopener nofollow noreferrer"></a>
+    </div>
+    <div class="icon-email sidebar-social-icon">
+      <a href=mailto:austin20463@gmail.com itemprop="url" target="_blank" aria-label="email" rel="noopener nofollow noreferrer"></a>
+    </div>
+    <div class="icon-linkedin sidebar-social-icon">
+      <a href=https://www.linkedin.com/in/chun-shih-chang-8a1410295/ itemprop="url" target="_blank" aria-label="linkedin" rel="noopener nofollow noreferrer"></a>
+    </div>
+    <div class="icon-globe sidebar-social-icon">
+      <a href=https://note.threemonth03.com itemprop="url" target="_blank" aria-label="globe" rel="noopener nofollow noreferrer"></a>
+    </div>
+</div>
+<div class="sidebar-menu">
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/en/" aria-label="Home"></a>
+        <div class="sidebar-menu-icon icon-taichi"></div>
+        <div class="sidebar-menu-link">Home</div>
+      </div>
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/en/archives" aria-label="Archives"></a>
+        <div class="sidebar-menu-icon icon-taichi"></div>
+        <div class="sidebar-menu-link">Archives</div>
+      </div>
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/en/note.html" aria-label="筆記"></a>
+        <div class="sidebar-menu-icon icon-taichi"></div>
+        <div class="sidebar-menu-link">筆記</div>
+      </div>
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/en/about.html" aria-label="About"></a>
+        <div class="sidebar-menu-icon icon-taichi"></div>
+        <div class="sidebar-menu-link">About</div>
+      </div>
+</div>
+</div>
+          <div class="sidebar-btn-wrapper" style="position:static">
+            <div class="sidebar-toc-btn current"></div>
+            <div class="sidebar-common-btn"></div>
+          </div>
+    </div>
+  </div>
+  <div class="sidebar-widget">
+  </div>
+  </div>
+</aside>
+
+          <section id="main" aria-label="Main content"><article id="post-2023-07-21-透過docker建立jupyter與tensorboard環境" class="h-entry article" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-inner" data-aos="fade-up">
+    <div class="article-meta">
+      <div class="article-date">
+  <span class="article-date-link icon-calendar" data-aos="zoom-in">
+    <time datetime="2023-07-20T19:18:00.000Z" itemprop="datePublished">2023-07-21</time>
+    <time style="display: none;" id="post-update-time">2026-05-10</time>
+  </span>
+</div>
+
+    </div>
+    
+    <div class="hr-line"></div>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+        <span id="more"></span>
+
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>這篇筆記整理如何用 Docker Compose 建立 Jupyter 與 TensorBoard 環境，並透過 local forwarding 在本機瀏覽器使用遠端服務。</p>
+<p>範例 repo 放在 <a target="_blank" rel="noopener" href="https://github.com/ThreeMonth03/Docker_example">ThreeMonth03&#x2F;Docker_example</a>。</p>
+<h2 id="專案結構"><a href="#專案結構" class="headerlink" title="專案結構"></a>專案結構</h2><p>這個 repository 裡有幾個重點：</p>
+<ul>
+<li><code>jupyter/</code>：Jupyter 服務的 Dockerfile。</li>
+<li><code>tensorboard/</code>：TensorBoard 服務的 Dockerfile。</li>
+<li><code>docker-compose.yml</code>：管理兩個 image 與 container。</li>
+<li><code>main.ipynb</code>、<code>logs/</code>：用來驗證 Jupyter 與 TensorBoard 是否正常。</li>
+</ul>
+<h2 id="執行流程"><a href="#執行流程" class="headerlink" title="執行流程"></a>執行流程</h2><p>如果服務跑在遠端機器上，可以先透過 SSH local forwarding 把 port 轉回本機。假設要轉兩個服務：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ssh -L localhost:8323:localhost:8323 [Account]@[Server IP]</span><br><span class="line">ssh -L localhost:8324:localhost:8324 [Account]@[Server IP]</span><br></pre></td></tr></table></figure>
+
+<p>接著在遠端機器 clone repo，並啟動服務：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/ThreeMonth03/Docker_example.git</span><br><span class="line"><span class="built_in">cd</span> Docker_example</span><br><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+<p>啟動後，在本機瀏覽器打開：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:8323/</span><br><span class="line">http://localhost:8324/</span><br></pre></td></tr></table></figure>
+
+<p>使用完後關閉服務：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose down</span><br></pre></td></tr></table></figure>
+
+<p>如果曾經修改過 <code>docker-compose.yml</code>，導致出現 orphan container，可以改用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose down --remove-orphans</span><br></pre></td></tr></table></figure>
+
+<h2 id="Local-Forwarding"><a href="#Local-Forwarding" class="headerlink" title="Local Forwarding"></a>Local Forwarding</h2><p>有時候遠端 server 的特定 port 不會直接對外開放。這時可以透過 SSH local forwarding，讓本機 port 對應到遠端 server 的 port。</p>
+<img src="https://johnliu55.tw/ssh-tunnel/images/local_scenario1_problem.png" alt="防火牆" title="防火牆"> 
+
+<p>基本格式如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -L localhost:[your_computer_port]:localhost:[server_port] [Account]@[Server IP]</span><br></pre></td></tr></table></figure>
+
+<img src="https://johnliu55.tw/ssh-tunnel/images/local_scenario1_solved.png" alt="Local Forwarding" title="Local Forwarding"> 
+
+<p>例如帳號是 <code>threemonth</code>，server IP 是 <code>123.456.78.901</code>，要把本機 <code>9090</code> 對到遠端 <code>8080</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -L localhost:9090:localhost:8080 threemonth@123.456.78.901</span><br></pre></td></tr></table></figure>
+
+<h2 id="Jupyter-與-TensorBoard-指令"><a href="#Jupyter-與-TensorBoard-指令" class="headerlink" title="Jupyter 與 TensorBoard 指令"></a>Jupyter 與 TensorBoard 指令</h2><p>Jupyter 可以用以下指令啟動：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">jupyter notebook \</span><br><span class="line">  --no-browser \</span><br><span class="line">  --ip=0.0.0.0 \</span><br><span class="line">  --port=8080 \</span><br><span class="line">  --allow-root \</span><br><span class="line">  --NotebookApp.token=<span class="string">&#x27;&#x27;</span> \</span><br><span class="line">  --NotebookApp.password=<span class="string">&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>幾個參數用途：</p>
+<ul>
+<li><code>--no-browser</code>：避免 server 嘗試打開瀏覽器。</li>
+<li><code>--ip=0.0.0.0</code>：讓外部位址可以連到 Jupyter 服務。</li>
+<li><code>--port</code>：指定 container 內服務 port。</li>
+<li><code>--allow-root</code>：允許 root 身分執行 Jupyter。</li>
+<li><code>--NotebookApp.token=&#39;&#39;</code> 與 <code>--NotebookApp.password=&#39;&#39;</code>：關閉 token 與 password 驗證，適合搭配受控環境或 tunnel 使用。</li>
+</ul>
+<p>TensorBoard 可以用以下指令啟動：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tensorboard --logdir ./logs --host=0.0.0.0 --port=8081</span><br></pre></td></tr></table></figure>
+
+<p>幾個參數用途：</p>
+<ul>
+<li><code>--logdir</code>：指定 log 路徑。</li>
+<li><code>--host=0.0.0.0</code>：讓外部位址可以連到 TensorBoard。</li>
+<li><code>--port</code>：指定服務 port。</li>
+</ul>
+<h2 id="Image-與-Container"><a href="#Image-與-Container" class="headerlink" title="Image 與 Container"></a>Image 與 Container</h2><p>Docker 裡最常遇到兩個概念：image 與 container。</p>
+<ul>
+<li>Image：環境模板，描述要安裝哪些套件、預設執行什麼指令。</li>
+<li>Container：根據 image 開出來的執行實例，真正提供服務。</li>
+</ul>
+<p>Image 可以保留並重複使用；container 用完後通常可以刪掉，下次再用同一個 image 開新的 container。</p>
+<h3 id="常用-Image-指令"><a href="#常用-Image-指令" class="headerlink" title="常用 Image 指令"></a>常用 Image 指令</h3><p>根據 Dockerfile 建立 image：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t [image_name] [path]</span><br></pre></td></tr></table></figure>
+
+<p>例如 Dockerfile 在目前資料夾，要建立 <code>jupyter_image</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t jupyter_image .</span><br></pre></td></tr></table></figure>
+
+<p>如果想忽略 cache 重新 build：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t [image_name] [path] --no-cache</span><br></pre></td></tr></table></figure>
+
+<p>查看 image：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></table></figure>
+
+<p>刪除 image：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker image <span class="built_in">rm</span> [image_name]</span><br></pre></td></tr></table></figure>
+
+<h3 id="Dockerfile-範例"><a href="#Dockerfile-範例" class="headerlink" title="Dockerfile 範例"></a>Dockerfile 範例</h3><p>以下是一個 TensorBoard image 的 Dockerfile：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> pytorch/pytorch:<span class="number">1.13</span>.<span class="number">0</span>-cuda11.<span class="number">6</span>-cudnn8-devel</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apt-get update &amp;&amp;\</span></span><br><span class="line"><span class="language-bash">    apt-get -y upgrade &amp;&amp;\</span></span><br><span class="line"><span class="language-bash">    apt-get install -y git net-tools vim <span class="built_in">sudo</span> tcsh gcc g++ unzip python3 python3-pip &amp;&amp;\</span></span><br><span class="line"><span class="language-bash">    apt-get clean &amp;&amp;\</span></span><br><span class="line"><span class="language-bash">    <span class="built_in">rm</span> -rf /var/lib/apt/lists/*</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> pip3 --no-cache-dir install torch \</span></span><br><span class="line"><span class="language-bash">    torchvision \</span></span><br><span class="line"><span class="language-bash">    torchaudio \</span></span><br><span class="line"><span class="language-bash">    tensorboard \</span></span><br><span class="line"><span class="language-bash">    jupyterlab \</span></span><br><span class="line"><span class="language-bash">    jupyter</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">CMD</span><span class="language-bash"> [<span class="string">&quot;tensorboard&quot;</span>, <span class="string">&quot;--logdir&quot;</span>, <span class="string">&quot;./logs&quot;</span>, <span class="string">&quot;--host=0.0.0.0&quot;</span>, <span class="string">&quot;--port=8324&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+
+<p>重點如下：</p>
+<ul>
+<li><code>FROM</code>：指定 base image。</li>
+<li><code>RUN</code>：安裝套件或執行建置指令。</li>
+<li><code>CMD</code>：container 啟動後預設執行的 command。</li>
+</ul>
+<h3 id="常用-Container-指令"><a href="#常用-Container-指令" class="headerlink" title="常用 Container 指令"></a>常用 Container 指令</h3><p>建好 image 後，就可以用 <code>docker run</code> 建立並執行 container：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run [options] [image_name] [<span class="built_in">command</span>]</span><br></pre></td></tr></table></figure>
+
+<p>常見 options：</p>
+<ul>
+<li><code>-it</code>：開啟互動式 terminal，常搭配 <code>bash</code> 使用。</li>
+<li><code>--name</code>：指定 container 名稱，建議加上，方便管理。</li>
+<li><code>-p</code>：做 port mapping，例如 <code>8080:8080</code>。</li>
+<li><code>-v</code>：mount 本機資料夾到 container 內。</li>
+<li><code>--gpus all</code>：讓 container 使用 GPU。</li>
+<li><code>command</code>：覆蓋 image 中的預設 <code>CMD</code>。</li>
+</ul>
+<p>只執行 <code>jupyter_image</code>，並命名為 <code>jupyter_container</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name jupyter_container jupyter_image</span><br></pre></td></tr></table></figure>
+
+<p>如果想開 terminal、轉 port、掛載目前資料夾、並使用 GPU：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --name jupyter_container -p 8080:8080 -v ./:/workspace --gpus all jupyter_image bash</span><br></pre></td></tr></table></figure>
+
+<p>離開 container：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">exit</span></span><br></pre></td></tr></table></figure>
+
+<p>重新啟動並 attach：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker start [container_name]</span><br><span class="line">docker attach [container_name]</span><br></pre></td></tr></table></figure>
+
+<p>查看 container：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker ps</span><br><span class="line">docker ps -a</span><br></pre></td></tr></table></figure>
+
+<p>刪除 container：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">rm</span> [CONTAINER ID]</span><br></pre></td></tr></table></figure>
+
+<h2 id="Docker-Compose"><a href="#Docker-Compose" class="headerlink" title="Docker Compose"></a>Docker Compose</h2><p>如果一次要管理多個服務，例如 Jupyter 與 TensorBoard，就適合使用 Docker Compose。它可以用一份 <code>docker-compose.yml</code> 管理多個 image、container、port 與 volume。</p>
+<p>啟動服務：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose up</span><br></pre></td></tr></table></figure>
+
+<p>讓服務在背景執行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+<p>停用服務：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose down</span><br></pre></td></tr></table></figure>
+
+<p>清掉 orphan container：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose down --remove-orphans</span><br></pre></td></tr></table></figure>
+
+<h3 id="docker-compose-yml-範例"><a href="#docker-compose-yml-範例" class="headerlink" title="docker-compose.yml 範例"></a>docker-compose.yml 範例</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3&quot;</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">Jupyter:</span></span><br><span class="line">    <span class="attr">build:</span> <span class="string">./jupyter</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">docker/threemonth</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">jupyterthreemonth</span></span><br><span class="line">    <span class="attr">ports:</span> </span><br><span class="line">    <span class="bullet">-</span> <span class="string">&quot;8323:8323&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">./:/workspace</span> </span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">command:</span> <span class="string">jupyter</span> <span class="string">notebook</span> <span class="string">--no-browser</span> <span class="string">--ip=0.0.0.0</span> <span class="string">--port=8323</span> <span class="string">--allow-root</span> <span class="string">--NotebookApp.token=&#x27;&#x27;</span> <span class="string">--NotebookApp.password=&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">Tensorboard:</span></span><br><span class="line">    <span class="attr">build:</span> <span class="string">./tensorboard</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">docker/threemonth2</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">tensorboardthreemonth</span></span><br><span class="line">    <span class="attr">ports:</span> </span><br><span class="line">    <span class="bullet">-</span> <span class="string">&quot;8324:8324&quot;</span></span><br><span class="line">    <span class="attr">depends_on:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">Jupyter</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">./:/workspace</span> </span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br></pre></td></tr></table></figure>
+
+<p>幾個欄位對應到 <code>docker run</code> 的概念：</p>
+<ul>
+<li><code>build</code>：指定 Dockerfile 所在目錄。</li>
+<li><code>image</code>：image 名稱。</li>
+<li><code>container_name</code>：container 名稱。</li>
+<li><code>ports</code>：對應 <code>docker run -p</code>。</li>
+<li><code>volumes</code>：對應 <code>docker run -v</code>。</li>
+<li><code>restart: unless-stopped</code>：除非手動停止，否則 container 掛掉後會自動重啟。</li>
+<li><code>depends_on</code>：控制服務啟動順序。</li>
+<li><code>command</code>：覆蓋 Dockerfile 中的預設 <code>CMD</code>。</li>
+</ul>
+<h2 id="小結"><a href="#小結" class="headerlink" title="小結"></a>小結</h2><p>Docker Compose 很適合用來管理多個彼此相關的開發服務。這個範例把 Jupyter 與 TensorBoard 分成兩個 container，再透過 volume 共用工作目錄，最後用 local forwarding 讓本機可以安全地連到遠端服務。</p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://yeasy.gitbook.io/docker_practice/">Docker 從入門到實踐</a></li>
+<li><a target="_blank" rel="noopener" href="https://johnliu55.tw/ssh-tunnel.html">SSH Tunnel 筆記</a></li>
+<li><a target="_blank" rel="noopener" href="https://azole.medium.com/docker-container-%E5%9F%BA%E7%A4%8E%E5%85%A5%E9%96%80%E7%AF%87-2-c14d8f852ae4">Docker Container 基礎入門篇</a></li>
+</ul>
+
+    </div>
+    <footer class="article-footer">
+        <a class="article-category-link" href="/en/categories/%E9%96%8B%E7%99%BC%E7%92%B0%E5%A2%83/" title="開發環境" data-aos="zoom-in">開發環境</a>
+
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in"><a class="article-tag-list-link" href="/en/tags/Docker/" rel="tag" title="Docker">Docker</a></li><li class="article-tag-list-item" data-aos="zoom-in"><a class="article-tag-list-link" href="/en/tags/Jupyter/" rel="tag" title="Jupyter">Jupyter</a></li><li class="article-tag-list-item" data-aos="zoom-in"><a class="article-tag-list-link" href="/en/tags/TensorBoard/" rel="tag" title="TensorBoard">TensorBoard</a></li></ul>
+
+    </footer>
+  </div>
+    <nav id="article-nav" aria-label="Article navigation" data-aos="fade-up">
+      <div class="article-nav-link-wrap left">
+            <img data-src="/covers/touhou-11.webp" data-sizes="auto" alt="使用nni尋找最佳超參數" class="lazyload">
+        <a href="/en/2023/08/27/2023-08-27-%E4%BD%BF%E7%94%A8nni%E6%89%BE%E6%9C%80%E4%BD%B3%E8%B6%85%E5%8F%83%E6%95%B8/" aria-label="Prev: 使用nni尋找最佳超參數" title="Prev: 使用nni尋找最佳超參數"></a>
+        <div class="article-nav-caption">Prev</div>
+        <h3 class="article-nav-title">
+            使用nni尋找最佳超參數
+        </h3>
+      </div>
+    <div class="article-nav-link-wrap right">
+          <img data-src="/covers/touhou-12.webp" data-sizes="auto" alt="LLaMA中使用的Positional Embedding" class="lazyload">
+      <a href="/en/2023/07/20/2023-07-20-LLaMA%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%9A%84Positional%20Embedding/" aria-label="Next: LLaMA中使用的Positional Embedding"  title="Next: LLaMA中使用的Positional Embedding"></a>
+      <div class="article-nav-caption">Next</div>
+      <h3 class="article-nav-title">
+          LLaMA中使用的Positional Embedding
+      </h3>
+    </div>
+  </nav>
+
+</article>
+
+
+</section>
+        </div>
+        <footer id="footer" aria-label="Site footer">
+  <div style="width: 100%; overflow: hidden">
+    <div class="footer-line"></div>
+  </div>
+  <div id="footer-info">
+    <div>
+      <span class="icon-copyright"></span>
+        2023-2026
+        <span class="footer-info-sep rotate"></span>
+      張君實
+    </div>
+      <div>
+        Powered by&nbsp;<a href="https://hexo.io/" rel="noopener nofollow noreferrer" target="_blank">Hexo</a>&nbsp;
+        Theme.<a href="https://github.com/D-Sketon/hexo-theme-reimu" rel="noopener nofollow noreferrer" target="_blank">Reimu</a>
+      </div>
+      <div>
+        <span class="icon-brush"></span>
+        5.3k
+        &nbsp;|&nbsp;
+        <span class="icon-coffee"></span>
+        00:27
+      </div>
+      <div>
+        <span class="icon-eye"></span>
+        <span id="busuanzi_container_site_pv">Number of visits&nbsp;<span id="busuanzi_value_site_pv"></span></span>
+        &nbsp;|&nbsp;
+        <span class="icon-user"></span>
+        <span id="busuanzi_container_site_uv">Number of visitors&nbsp;<span id="busuanzi_value_site_uv"></span></span>
+      </div>
+  </div>
+</footer>
+
+          <div class="sidebar-top">
+            <div class="sidebar-top-taichi rotate"></div>
+            <div class="arrow-up"></div>
+          </div>
+        <div id="mask" class="hide"></div>
+      </div>
+      <nav id="mobile-nav" aria-label="Mobile navigation">
+  <div class="sidebar-wrap">
+        <div class="sidebar-toc-sidebar"><h3 class="toc-title">Contents</h3>
+<div class="sidebar-toc-wrapper toc-div-class" >
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%88%E6%A1%88%E7%B5%90%E6%A7%8B"><span class="toc-number">2.</span> <span class="toc-text">專案結構</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%B7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">執行流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Local-Forwarding"><span class="toc-number">4.</span> <span class="toc-text">Local Forwarding</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Jupyter-%E8%88%87-TensorBoard-%E6%8C%87%E4%BB%A4"><span class="toc-number">5.</span> <span class="toc-text">Jupyter 與 TensorBoard 指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Image-%E8%88%87-Container"><span class="toc-number">6.</span> <span class="toc-text">Image 與 Container</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8-Image-%E6%8C%87%E4%BB%A4"><span class="toc-number">6.1.</span> <span class="toc-text">常用 Image 指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dockerfile-%E7%AF%84%E4%BE%8B"><span class="toc-number">6.2.</span> <span class="toc-text">Dockerfile 範例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8-Container-%E6%8C%87%E4%BB%A4"><span class="toc-number">6.3.</span> <span class="toc-text">常用 Container 指令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Docker-Compose"><span class="toc-number">7.</span> <span class="toc-text">Docker Compose</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#docker-compose-yml-%E7%AF%84%E4%BE%8B"><span class="toc-number">7.1.</span> <span class="toc-text">docker-compose.yml 範例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E7%B5%90"><span class="toc-number">8.</span> <span class="toc-text">小結</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">9.</span> <span class="toc-text">Reference</span></a></li></ol>
+</div>
+</div>
+        <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img data-src="/avatar/avatar.webp" data-sizes="auto" alt="張君實" class="lazyload">
+  <div class="sidebar-author-name">張君實</div>
+  <div class="sidebar-description">張君實的技術筆記、研究閱讀與開發紀錄。</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>Post</div>
+    <div class="sidebar-state-number">5</div>
+  </div>
+  <div class="sidebar-state-category">
+    <div>Category</div>
+    <div class="sidebar-state-number">4</div>
+  </div>
+  <div class="sidebar-state-tag">
+    <div>Tag</div>
+    <div class="sidebar-state-number">12</div>
+  </div>
+</div>
+<div class="sidebar-social" >
+    <div class="icon-github sidebar-social-icon">
+      <a href=https://github.com/threemonth03/ itemprop="url" target="_blank" aria-label="github" rel="noopener nofollow noreferrer"></a>
+    </div>
+    <div class="icon-twitter sidebar-social-icon">
+      <a href=https://twitter.com/Thre3Month itemprop="url" target="_blank" aria-label="twitter" rel="noopener nofollow noreferrer"></a>
+    </div>
+    <div class="icon-email sidebar-social-icon">
+      <a href=mailto:austin20463@gmail.com itemprop="url" target="_blank" aria-label="email" rel="noopener nofollow noreferrer"></a>
+    </div>
+    <div class="icon-linkedin sidebar-social-icon">
+      <a href=https://www.linkedin.com/in/chun-shih-chang-8a1410295/ itemprop="url" target="_blank" aria-label="linkedin" rel="noopener nofollow noreferrer"></a>
+    </div>
+    <div class="icon-globe sidebar-social-icon">
+      <a href=https://note.threemonth03.com itemprop="url" target="_blank" aria-label="globe" rel="noopener nofollow noreferrer"></a>
+    </div>
+</div>
+<div class="sidebar-menu">
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/en/" aria-label="Home"></a>
+        <div class="sidebar-menu-icon icon-taichi"></div>
+        <div class="sidebar-menu-link">Home</div>
+      </div>
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/en/archives" aria-label="Archives"></a>
+        <div class="sidebar-menu-icon icon-taichi"></div>
+        <div class="sidebar-menu-link">Archives</div>
+      </div>
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/en/note.html" aria-label="筆記"></a>
+        <div class="sidebar-menu-icon icon-taichi"></div>
+        <div class="sidebar-menu-link">筆記</div>
+      </div>
+      <div class="sidebar-menu-link-wrap">
+        <a class="sidebar-menu-link-dummy" href="/en/about.html" aria-label="About"></a>
+        <div class="sidebar-menu-icon icon-taichi"></div>
+        <div class="sidebar-menu-link">About</div>
+      </div>
+</div>
+</div>
+  </div>
+      <div class="sidebar-btn-wrapper">
+        <div class="sidebar-toc-btn current"></div>
+        <div class="sidebar-common-btn"></div>
+      </div>
+</nav>
+
+    </div>
+      <div class="site-search">
+        <div class="reimu-popup popup">
+          <div class="reimu-search">
+            <div class="reimu-search-input-icon"></div>
+            <div id="reimu-search-input"></div>
+            <div class="popup-btn-close"></div>
+          </div>
+          <div class="reimu-results">
+            <div id="reimu-stats"></div>
+            <div id="reimu-hits"></div>
+            <div id="reimu-pagination" class="reimu-pagination"></div>
+          </div>
+          <img class="reimu-bg" src="/images/reimu.png" loading="lazy" decoding="async" fetchpriority="low"/>
+        </div>
+      </div>
+    
+<script src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js" integrity="sha384-3gT&#x2F;vsepWkfz&#x2F;ff7PpWNUeMzeWoH3cDhm&#x2F;A8jM7ouoAK0&#x2F;fP&#x2F;9bcHHR5kHq2nf+e" crossorigin="anonymous"></script>
+
+
+<script src="https://npm.webcache.cn/clipboard@2.0.11/dist/clipboard.min.js" integrity="sha384-J08i8An&#x2F;QeARD9ExYpvphB8BsyOj3Gh2TSh1aLINKO3L0cMSH2dN3E22zFoXEi0Q" crossorigin="anonymous"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+  
+<script src="/js/aos.js"></script>
+
+  <script>
+    var aosInit = () => {
+      AOS.init({
+        duration: 1000,
+        easing: "ease",
+        once: true,
+        offset: 50,
+      });
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', aosInit);
+    } else {
+      aosInit();
+    }
+  </script>
+
+
+<script src="/js/pjax_script.js" data-pjax></script>
+
+
+  
+<script src="/js/generator_search.js" defer></script>
+
+
+
+  <script>
+    var setupFirework = () => {
+      if (!false || !window.matchMedia('(max-width: 768px)').matches) {
+        window.firework && window.firework(JSON.parse('{"excludeElements":["a","button"],"particles":[{"shape":"circle","move":["emit"],"easing":"easeOutExpo","colors":["var(--red-1)","var(--red-2)","var(--red-3)","var(--red-4)"],"number":20,"duration":[1200,1800],"shapeOptions":{"radius":[16,32],"alpha":[0.3,0.5]}},{"shape":"circle","move":["diffuse"],"easing":"easeOutExpo","colors":["var(--red-0)"],"number":1,"duration":[1200,1800],"shapeOptions":{"radius":20,"alpha":[0.2,0.5],"lineWidth":6}}]}'));
+      }
+    }
+  </script>
+  
+<script src="https://npm.webcache.cn/mouse-firework@0.2.0/dist/index.umd.js" integrity="sha384-qi9WggRt19tv8Vc7pCHW3ulMNLwrn515zaLEWZjl1px07vz8+pUoWX8n1rgq282T" crossorigin="anonymous" onload="setupFirework()" defer></script>
+
+
+  
+<script src="https://npm.webcache.cn/theme-shokax-pjax@0.0.3/dist/index.umd.js" integrity="sha384-xneY1WY8hOfUzswrE4CrYq35N4BdVcxqxwHPr9zawE&#x2F;jMSCxD+jAPU55x&#x2F;jj3wlf" crossorigin="anonymous"></script>
+
+  
+<script src="/js/pjax.js"></script>
+
+
+
+
+
+<div id="lazy-script">
+  <div>
+      
+      
+      <script data-pjax>
+        window.REIMU_POST = {
+          author: "張君實",
+          title: "透過docker建立jupyter與tensorboard環境",
+          url: "https://www.threemonth03.com/2023/07/21/2023-07-21-%E9%80%8F%E9%81%8Edocker%E5%BB%BA%E7%AB%8Bjupyter%E8%88%87tensorboard%E7%92%B0%E5%A2%83/",
+          excerpt: "",
+          description: "",
+          stripContent: "  前言這篇筆記整理如何用 Docker Compose 建立 Jupyter 與 TensorBoard 環境，並透過 local forwarding 在本機瀏覽器使用遠端服務。 範例 repo 放在 ThreeMonth03&amp;#x2F;Docker_example。 專案結構這個 repository 裡有幾個重點：  jupyter/：Jupyter 服務的 Dockerfile。 tensorboard/：TensorBoard 服務的 Dockerfile。 docker-compo",
+          date: "Fri Jul 21 2023 03:18:00 GMT+0800",
+          updated: "Sun May 10 2026 22:12:45 GMT+0800",
+          cover: "/images/banner.webp",
+        };
+      </script>
+        
+<script src="/js/insert_highlight.js" data-pjax></script>
+
+      
+<script src="/js/tabs.js" data-pjax defer></script>
+
+      <script type="module" data-pjax>
+        (async () => {
+          const PhotoSwipeLightbox = (await safeImport("https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe-lightbox.esm.min.js", "sha384-DiL6M/gG+wmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF/N6lrZi/")).default;
+          const initPswp = (gallery, children) => {
+            if (_$$(`${gallery} ${children}`).length > 0) {
+              new PhotoSwipeLightbox({
+                gallery,
+                children,
+                pswpModule: () => safeImport("https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8+oTJ7m3DfYEWX1fu1scuS4+s")
+              }).init();
+            }
+          }
+          const pswp = () => {
+            initPswp('.article-entry', 'a.article-gallery-item');
+            initPswp('.article-gallery', 'a.article-gallery-item');
+          }
+          pswp();
+        })();
+      </script>
+        
+
+
+  </div>
+</div>
+
+
+  <script>
+    console.log(String.raw`%c 
+ ______     ______     __     __    __     __  __    
+/\  == \   /\  ___\   /\ \   /\ "-./  \   /\ \/\ \   
+\ \  __<   \ \  __\   \ \ \  \ \ \-./\ \  \ \ \_\ \  
+ \ \_\ \_\  \ \_____\  \ \_\  \ \_\ \ \_\  \ \_____\ 
+  \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
+                                                  
+`,'color: #ff5252;')
+    console.log('%c Theme.Reimu v' + '1.12.4' + ' %c https://github.com/D-Sketon/hexo-theme-reimu ', 'color: white; background: #ff5252; padding:5px 0;', 'padding:4px;border:1px solid #ff5252;')
+  </script>
+  
+
+
+  
+<script src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js" integrity="sha384-0M75wtSkhjIInv4coYlaJU83+OypaRCIq2SukQVQX04eGTCBXJDuWAbJet56id+S" crossorigin="anonymous" async></script>
+
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      for (let registration of registrations) {
+        registration.unregister();
+      }
+    });
+  }
+</script>
+
+
+    <script>
+      var setupAPlayer = () => {
+        if (!false || !window.matchMedia('(max-width: 768px)').matches) {
+          if (window.matchMedia('(max-width: 959px)').matches) {
+            const meting = _$('meting-js');
+            if (meting) {
+              meting.setAttribute('fixed', 'true');
+              const aside = meting.parentNode?.parentNode;
+              if (aside?.tagName === 'ASIDE') {
+                meting.parentNode.removeChild(meting);
+                document.body.appendChild(meting);
+              }
+            }
+          }
+        }
+      };
+    </script>
+  
+<script src="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.js" integrity="sha384-gdGYZwHnfJM54evoZhpO0s6ZF5BQiybkiyW7VXr+h5UfruuRL&#x2F;aORyw+5+HZoU6e" crossorigin="anonymous" defer onload="setupAPlayer()"></script>
+
+    
+<script src="https://npm.webcache.cn/meting@2.0.1/dist/Meting.min.js" integrity="sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8+0maanw1S&#x2F;IyB+Y4JG+ZDU7GpKE8" crossorigin="anonymous" defer></script>
+
+
+  
+<script src="https://npm.webcache.cn/pangu@4.0.7/dist/browser/pangu.min.js" integrity="sha384-HeUHqi0nVsPUm&#x2F;E0ss7OfnIV&#x2F;yD96JWB8ehZvUuoVax9DpNHL17jj9pdfXHzqDxm" crossorigin="anonymous" defer></script>
+
+  <script data-pjax>
+    if (document.readyState === "loading") {
+      document.addEventListener('DOMContentLoaded', () => {
+        pangu?.spacingPage();
+      });
+    } else {
+      pangu?.spacingPage();
+    }
+  </script>
+
+  </body>
+  </html>
